@@ -18,8 +18,8 @@
   --neutral-white: #fffcf9;
   --neutral-light: #fff7ed;      /* Warm cream background with orange tint */
   --neutral-border: #fed7aa;     /* Subtle warm border matching the color palette */
-  --neutral-muted: #64748b;
-  --neutral-dark: #334155;
+  --neutral-muted: #475569;
+  --neutral-dark: #1e293b;
   --neutral-card: #fffcf9;
 
   /* Typography */
@@ -1615,7 +1615,7 @@ footer {
 
 .product-short-desc {
     font-size: 0.85rem;
-    color: #6b7280;
+    color: #475569;
     margin-bottom: 1rem;
     line-height: 1.5;
     display: -webkit-box;
@@ -1641,7 +1641,7 @@ footer {
 
 .regular-price {
     font-size: 0.9rem;
-    color: #9ca3af;
+    color: #64748b;
     text-decoration: line-through;
 }
 

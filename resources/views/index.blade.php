@@ -502,7 +502,7 @@
       <div class="loader-content">
           <div class="loader-logo-wrap">
               <div class="loader-ring"></div>
-              <img src="{{ asset('assets/images/logo.jpg') }}" alt="Loku Kade Loading" class="loader-logo">
+              <img src="{{ asset('assets/images/logo.webp') }}" alt="Loku Kade Loading" class="loader-logo" width="72" height="72">
           </div>
           <div class="loader-brand">
               Loku <span>Kade</span>
@@ -520,7 +520,7 @@
     <div class="container">
       <!-- Row 1: Logo, Navigation links, Call-to-actions -->
       <div class="header-top-row" style="display: flex; width: 100%; justify-content: space-between; align-items: center; gap: 1rem;">
-          <a href="#" class="logo" id="logoLink">
+          <a href="#" class="logo" id="logoLink" aria-label="Loku Kade Home">
             <img src="{{ asset('assets/images/logo.webp') }}" alt="Loku Kade Logo" width="48" height="48" style="height: 48px; border-radius: 50%; width: 48px;">
             Loku <span>Kade</span>
           </a>
@@ -554,6 +554,9 @@
 
     </div>
   </header>
+
+  <!-- --- MAIN CONTENT LANDMARK --- -->
+  <main id="mainContent">
 
   <!-- --- HERO SECTION --- -->
   <section class="hero" id="hero">
@@ -734,28 +737,28 @@
           <div class="benefit-item">
             <i class="bi bi-gift-fill"></i>
             <div>
-              <h4>100% Free Shipping</h4>
+              <h3>100% Free Shipping</h3>
               <p>No delivery fees or hidden charges applied to any order.</p>
             </div>
           </div>
           <div class="benefit-item">
             <i class="bi bi-calendar2-check-fill"></i>
             <div>
-              <h4>1-3 Days Delivery</h4>
+              <h3>1-3 Days Delivery</h3>
               <p>Quick dispatches directly from our warehouse to any major city.</p>
             </div>
           </div>
           <div class="benefit-item">
             <i class="bi bi-shield-fill-check"></i>
             <div>
-              <h4>Safe Inspection</h4>
+              <h3>Safe Inspection</h3>
               <p>Open and verify your package condition before handing over cash.</p>
             </div>
           </div>
           <div class="benefit-item">
             <i class="bi bi-geo-alt-fill"></i>
             <div>
-              <h4>Live Order Tracking</h4>
+              <h3>Live Order Tracking</h3>
               <p>Track your delivery status anytime using your mobile number or Order ID — right here on this website.</p>
             </div>
           </div>
@@ -907,12 +910,15 @@
     </div>
   </section>
 
+  </main>
+  <!-- --- END MAIN CONTENT LANDMARK --- -->
+
   <!-- --- FOOTER --- -->
   <footer>
     <div class="container footer-grid">
       <div class="footer-col brand">
-        <a href="#" class="logo" style="margin-bottom: 1.2rem;">
-          <img src="{{ asset('assets/images/logo.jpg') }}" alt="Loku Kade Logo" style="height: 48px; border-radius: 50%; width: auto;">
+        <a href="#" class="logo" style="margin-bottom: 1.2rem;" aria-label="Loku Kade Home">
+          <img src="{{ asset('assets/images/logo.webp') }}" alt="Loku Kade Logo" width="48" height="48" style="height: 48px; border-radius: 50%; width: 48px;">
           Loku <span>Kade</span>
         </a>
         <p>Loku Kade is your trusted online shopping store in Sri Lanka, bringing premium household, kitchen, and electronic items to your door at wholesale prices.</p>
@@ -1163,9 +1169,9 @@
                             <h4 class="cart-item-title">${item.product_name}</h4>
                             <span class="cart-item-price">Rs. ${item.selling_price.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>
                             <div class="cart-item-qty-actions">
-                                <button class="cart-item-qty-btn" onclick="updateQty(${item.product_id}, -1)">-</button>
+                                <button class="cart-item-qty-btn" aria-label="Decrease Quantity" onclick="updateQty(${item.product_id}, -1)">-</button>
                                 <span class="cart-item-qty-val">${item.quantity}</span>
-                                <button class="cart-item-qty-btn" onclick="updateQty(${item.product_id}, 1)">+</button>
+                                <button class="cart-item-qty-btn" aria-label="Increase Quantity" onclick="updateQty(${item.product_id}, 1)">+</button>
                             </div>
                         </div>
                         <i class="bi bi-trash cart-item-delete" onclick="removeFromCart(${item.product_id})"></i>
@@ -1267,7 +1273,7 @@
           </a>
       </div>
 
-      <button type="button" class="bottom-nav-item" id="mobileBottomCartBtn">
+      <button type="button" class="bottom-nav-item" id="mobileBottomCartBtn" aria-label="View Shopping Cart">
           <i class="bi bi-cart3"></i>
           <span class="badge bg-danger rounded-pill" id="mobileCartBadgeCount" style="position: absolute; top: 6px; right: calc(50% - 22px); font-size: 0.65rem; display: none;">0</span>
           <span>Cart</span>

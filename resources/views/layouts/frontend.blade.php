@@ -501,7 +501,7 @@
       <div class="loader-content">
           <div class="loader-logo-wrap">
               <div class="loader-ring"></div>
-              <img src="{{ asset('assets/images/logo.jpg') }}" alt="Loku Kade Loading" class="loader-logo">
+              <img src="{{ asset('assets/images/logo.webp') }}" alt="Loku Kade Loading" class="loader-logo" width="72" height="72">
           </div>
           <div class="loader-brand">
               Loku <span>Kade</span>
@@ -519,8 +519,8 @@
     <div class="container">
       <!-- Row 1: Logo, Navigation links, Call-to-actions -->
       <div class="header-top-row" style="display: flex; width: 100%; justify-content: space-between; align-items: center; gap: 1rem;">
-          <a href="{{ route('home') }}" class="logo" id="logoLink">
-            <img src="{{ asset('assets/images/logo.jpg') }}" alt="Loku Kade Logo" style="height: 48px; border-radius: 50%; width: auto;">
+          <a href="{{ route('home') }}" class="logo" id="logoLink" aria-label="Loku Kade Home">
+            <img src="{{ asset('assets/images/logo.webp') }}" alt="Loku Kade Logo" width="48" height="48" style="height: 48px; border-radius: 50%; width: 48px;">
             Loku <span>Kade</span>
           </a>
 
@@ -569,15 +569,18 @@
     </div>
   </header>
 
-  <!-- --- MAIN CONTENT --- -->
-  @yield('content')
+  <!-- --- MAIN CONTENT LANDMARK --- -->
+  <main id="mainContent">
+    @yield('content')
+  </main>
+  <!-- --- END MAIN CONTENT LANDMARK --- -->
 
   <!-- --- FOOTER --- -->
   <footer>
     <div class="container footer-grid">
       <div class="footer-col brand">
-        <a href="{{ route('home') }}" class="logo" style="margin-bottom: 1.2rem;">
-          <img src="{{ asset('assets/images/logo.jpg') }}" alt="Loku Kade Logo" style="height: 48px; border-radius: 50%; width: auto;">
+        <a href="{{ route('home') }}" class="logo" style="margin-bottom: 1.2rem;" aria-label="Loku Kade Home">
+          <img src="{{ asset('assets/images/logo.webp') }}" alt="Loku Kade Logo" width="48" height="48" style="height: 48px; border-radius: 50%; width: 48px;">
           Loku <span>Kade</span>
         </a>
         <p>Loku Kade is your trusted online shopping store in Sri Lanka, bringing premium household, kitchen, and electronic items to your door at wholesale prices.</p>
