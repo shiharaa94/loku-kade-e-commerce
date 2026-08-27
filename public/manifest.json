@@ -1,0 +1,26 @@
+{
+  "id": "/?source=pwa",
+  "name": "Loku Kade E-Commerce",
+  "short_name": "Loku Kade",
+  "description": "Premium wholesale & retail e-commerce shopping store in Sri Lanka.",
+  "start_url": "/?source=pwa",
+  "display": "standalone",
+  "background_color": "#fffcf9",
+  "theme_color": "#dc2626",
+  "orientation": "portrait",
+  "scope": "/",
+  "icons": [
+    {
+      "src": "/assets/images/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/assets/images/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
