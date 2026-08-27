@@ -1,0 +1,88 @@
+name: Deploy Loku Kade E commerce to cPanel
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          extensions: mbstring, xml, bcmath, mysql, zip
+
+      - name: Install Composer Dependencies
+        run: composer install --no-dev --optimize-autoloader --no-interaction
+
+      - name: Clean up development files before upload
+        run: |
+          rm -rf node_modules
+          rm -rf .git
+          rm -rf .github
+          rm -rf tests
+          rm -f .env
+          rm -f .env.example
+          rm -f phpunit.xml
+          rm -rf storage/framework/cache/data/*
+          rm -rf storage/framework/sessions/*
+          rm -rf storage/framework/views/*.php
+          rm -f storage/logs/*.log
+
+      - name: Put Site in Maintenance Mode
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.API_TOKEN }}
+          passphrase: ${{ secrets.SSH_PASSPHRASE }}
+          port: ${{ secrets.SSH_PORT }}
+          script: |
+            cd ${{ secrets.REMOTE_DIR }}
+            php artisan down --refresh=15 --retry=60 || true
+
+      - name: Deploy files to Server via SCP
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.API_TOKEN }}
+          passphrase: ${{ secrets.SSH_PASSPHRASE }}
+          port: ${{ secrets.SSH_PORT }}
+          source: "**"
+          target: ${{ secrets.REMOTE_DIR }}
+
+      - name: Execute Post-Deployment Commands
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.API_TOKEN }}
+          passphrase: ${{ secrets.SSH_PASSPHRASE }}
+          port: ${{ secrets.SSH_PORT }}
+          script: |
+            cd ${{ secrets.REMOTE_DIR }}
+            php artisan migrate --force
+            rm -rf public/storage
+            php artisan storage:link
+            php artisan config:cache
+            php artisan route:cache
+            php artisan view:cache
+            cp -r public/images/* ../images/ || true
+            cp -r public/images/* ../public_html/images/ || true
+            cp -r public/icons/* ../icons/ || true
+            cp -r public/icons/* ../public_html/icons/ || true
+            cp public/favicon.ico ../ || true
+            cp public/favicon.ico ../public_html/ || true
+            cp public/manifest.json ../ || true
+            cp public/manifest.json ../public_html/ || true
+            cp public/service-worker.js ../ || true
+            cp public/service-worker.js ../public_html/ || true
+            php artisan up
