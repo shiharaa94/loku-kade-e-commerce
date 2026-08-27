@@ -45,6 +45,7 @@ jobs:
           passphrase: ${{ secrets.SSH_PASSPHRASE }}
           port: ${{ secrets.SSH_PORT }}
           script: |
+            mkdir -p ${{ secrets.REMOTE_DIR }}
             cd ${{ secrets.REMOTE_DIR }}
             php artisan down --refresh=15 --retry=60 || true
 
@@ -58,6 +59,8 @@ jobs:
           port: ${{ secrets.SSH_PORT }}
           source: "**"
           target: ${{ secrets.REMOTE_DIR }}
+          overwrite: true
+          strip_components: 0
 
       - name: Execute Post-Deployment Commands
         uses: appleboy/ssh-action@master
