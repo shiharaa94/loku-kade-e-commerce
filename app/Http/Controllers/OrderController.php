@@ -143,7 +143,10 @@ class OrderController extends Controller
 
             // Find last order for this website agent to increment sequence number
             $lastOrder = OrderHeader::where('agent_id', $defaultAgentId)
-                ->where('order_number', 'like', "ORD-{$defaultAgentId}-%")
+                ->where(function ($query) use ($defaultAgentId) {
+                    $query->where('order_number', 'like', 'ORD-W-%')
+                          ->orWhere('order_number', 'like', "ORD-{$defaultAgentId}-%");
+                })
                 ->orderBy('id', 'desc')
                 ->first();
 
@@ -155,7 +158,7 @@ class OrderController extends Controller
                 }
             }
 
-            $orderNumber = sprintf("ORD-%d-%04d", $defaultAgentId, $nextSequence);
+            $orderNumber = sprintf("ORD-W-%04d", $nextSequence);
             $totalAmount = 0;
             $totalQty = 0;
 
