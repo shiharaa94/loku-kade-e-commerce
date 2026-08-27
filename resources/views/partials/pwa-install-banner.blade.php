@@ -110,19 +110,19 @@
 
 <div id="pwaInstallBanner" class="pwa-install-banner">
   <div class="pwa-banner-content">
-    <img src="{{ asset('assets/images/logo.jpg') }}" alt="Loku Kade App" class="pwa-banner-icon">
+    <img src="{{ asset('assets/images/logo.webp') }}" alt="Loku Kade App" class="pwa-banner-icon" width="42" height="42">
     <div class="pwa-banner-text">
       <div class="pwa-banner-title">
         Loku Kade App <span style="font-size: 0.68rem; color: #f59e0b;">★★★★★</span>
       </div>
-      <p class="pwa-banner-desc">Fast & 100% Free Shopping App</p>
+      <p class="pwa-banner-desc" style="color: #374151;">Fast & 100% Free Shopping App</p>
     </div>
   </div>
   <div class="pwa-banner-actions">
-    <button type="button" class="btn-pwa-install" id="btnPwaInstall">
+    <button type="button" class="btn-pwa-install" id="btnPwaInstall" aria-label="Install Loku Kade App">
       <i class="bi bi-download"></i> Install
     </button>
-    <button type="button" class="btn-pwa-close" id="btnPwaClose" aria-label="Dismiss">&times;</button>
+    <button type="button" class="btn-pwa-close" id="btnPwaClose" aria-label="Dismiss App Install Banner">&times;</button>
   </div>
 </div>
 

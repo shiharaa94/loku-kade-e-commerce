@@ -315,15 +315,16 @@
         height: 100%;
         background: transparent;
         border: none;
-        color: #6b7280;
+        color: #374151;
         text-decoration: none !important;
         font-family: 'Outfit', sans-serif;
         font-size: 0.72rem;
         font-weight: 600;
         gap: 3px;
         position: relative;
-        padding: 0;
-        transition: color 0.15s ease;
+        cursor: pointer;
+        padding: 4px 0;
+        transition: var(--transition-smooth);
     }
     .bottom-nav-item:hover, .bottom-nav-item.active {
         color: #dc2626;
@@ -690,11 +691,11 @@
 
       <div class="categories-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 1rem;">
         @foreach($homeCategories as $cat)
-          <a href="{{ route('products.shop') }}?category={{ $cat->id }}" class="category-card reveal active" style="background: #ffffff; border: 1px solid #e5e7eb; border-radius: var(--border-radius-md); padding: 1.5rem 1rem; text-align: center; text-decoration: none; color: inherit; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.75rem; box-shadow: var(--shadow-sm); cursor: pointer;">
+          <a href="{{ route('products.shop') }}?category={{ $cat->id }}" class="category-card reveal active" aria-label="Browse category: {{ $cat->name }}" style="background: #ffffff; border: 1px solid #e5e7eb; border-radius: var(--border-radius-md); padding: 1.5rem 1rem; text-align: center; text-decoration: none; color: inherit; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.75rem; box-shadow: var(--shadow-sm); cursor: pointer;">
             <div class="category-icon-wrap" style="width: 50px; height: 50px; border-radius: 50%; background: linear-gradient(135deg, #fff5f5 0%, #fffbeb 100%); border: 1px solid #fee2e2; display: flex; align-items: center; justify-content: center; color: #dc2626; font-size: 1.5rem; transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;">
               <i class="{{ $cat->icon_class }}"></i>
             </div>
-            <span class="category-name" style="font-size: 0.82rem; font-weight: 600; color: #4b5563; line-height: 1.3; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; height: 2.6em;">{{ $cat->name }}</span>
+            <span class="category-name" style="font-size: 0.82rem; font-weight: 600; color: #1e293b; line-height: 1.3; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; height: 2.6em;">{{ $cat->name }}</span>
           </a>
         @endforeach
       </div>
@@ -796,7 +797,7 @@
                 <div class="testimonial-user">
                   <div class="testimonial-user-icon">K</div>
                   <div class="testimonial-user-info">
-                    <h5>Kasun Perera</h5>
+                    <h3 style="font-size: 1.05rem; font-weight: 700; margin: 0; color: var(--primary-base);">Kasun Perera</h3>
                     <span>Colombo, Verified Buyer</span>
                   </div>
                 </div>
@@ -812,7 +813,7 @@
                 <div class="testimonial-user">
                   <div class="testimonial-user-icon">N</div>
                   <div class="testimonial-user-info">
-                    <h5>Nilanthi Silva</h5>
+                    <h3 style="font-size: 1.05rem; font-weight: 700; margin: 0; color: var(--primary-base);">Nilanthi Silva</h3>
                     <span>Kandy, Verified Buyer</span>
                   </div>
                 </div>
@@ -828,7 +829,7 @@
                 <div class="testimonial-user">
                   <div class="testimonial-user-icon">S</div>
                   <div class="testimonial-user-info">
-                    <h5>Suresh Kumar</h5>
+                    <h3 style="font-size: 1.05rem; font-weight: 700; margin: 0; color: var(--primary-base);">Suresh Kumar</h3>
                     <span>Jaffna, Verified Buyer</span>
                   </div>
                 </div>
@@ -923,11 +924,11 @@
         </a>
         <p>Loku Kade is your trusted online shopping store in Sri Lanka, bringing premium household, kitchen, and electronic items to your door at wholesale prices.</p>
         <div class="footer-socials">
-          <a href="https://www.facebook.com/profile.php?id=61569444895967" target="_blank" class="social-icon" aria-label="Facebook"><i class="bi bi-facebook"></i></a>
-          <a href="https://www.instagram.com/lokukade" target="_blank" class="social-icon" aria-label="Instagram"><i class="bi bi-instagram"></i></a>
-          <a href="https://www.tiktok.com/@loku.kade" target="_blank" class="social-icon" aria-label="TikTok"><i class="bi bi-tiktok"></i></a>
-          <a href="https://www.youtube.com/@lokukade" target="_blank" class="social-icon" aria-label="YouTube"><i class="bi bi-youtube"></i></a>
-          <a href="https://wa.me/94706050500" target="_blank" class="social-icon" aria-label="WhatsApp"><i class="bi bi-whatsapp"></i></a>
+          <a href="https://www.facebook.com/profile.php?id=61569444895967" target="_blank" class="social-icon" aria-label="Follow Loku Kade on Facebook"><i class="bi bi-facebook"></i></a>
+          <a href="https://www.instagram.com/lokukade" target="_blank" class="social-icon" aria-label="Follow Loku Kade on Instagram"><i class="bi bi-instagram"></i></a>
+          <a href="https://www.tiktok.com/@loku.kade" target="_blank" class="social-icon" aria-label="Follow Loku Kade on TikTok"><i class="bi bi-tiktok"></i></a>
+          <a href="https://www.youtube.com/@lokukade" target="_blank" class="social-icon" aria-label="Subscribe to Loku Kade on YouTube"><i class="bi bi-youtube"></i></a>
+          <a href="https://wa.me/94706050500" target="_blank" class="social-icon" aria-label="Chat with Loku Kade on WhatsApp"><i class="bi bi-whatsapp"></i></a>
         </div>
       </div>
 
@@ -953,24 +954,24 @@
           <li>
             <i class="bi bi-telephone"></i>
             <div>
-              <a href="tel:0706050500">070 60 50 500</a>
+              <a href="tel:0706050500" aria-label="Call Loku Kade at 070 60 50 500">070 60 50 500</a>
             </div>
           </li>
           <li>
             <i class="bi bi-whatsapp"></i>
-            <a href="https://wa.me/94706050500" target="_blank">Chat on WhatsApp</a>
+            <a href="https://wa.me/94706050500" target="_blank" aria-label="Chat with us on WhatsApp">Chat on WhatsApp</a>
           </li>
           <li>
             <i class="bi bi-envelope"></i>
-            <a href="mailto:info@lokukade.lk">info@lokukade.lk</a>
+            <a href="mailto:info@lokukade.lk" aria-label="Send email to info@lokukade.lk">info@lokukade.lk</a>
           </li>
         </ul>
       </div>
     </div>
 
     <div class="container footer-bottom">
-      <p>&copy; 2026 Loku Kade. All Rights Reserved. Developed by <a href="https://velostack.lk" target="_blank" style="color: var(--primary-glow); font-weight: 600;">VeloStack.lk</a></p>
-      <p><a href="{{ route('public.terms') }}" style="transition: var(--transition-smooth);">Terms of Service</a> &bull; <a href="{{ route('public.privacy') }}" style="transition: var(--transition-smooth);">Privacy Policy</a></p>
+      <p>&copy; 2026 Loku Kade. All Rights Reserved. Developed by <a href="https://velostack.lk" target="_blank" style="color: var(--primary-glow); font-weight: 600;" aria-label="Developed by VeloStack">VeloStack.lk</a></p>
+      <p><a href="{{ route('public.terms') }}" style="transition: var(--transition-smooth);" aria-label="Terms of Service">Terms of Service</a> &bull; <a href="{{ route('public.privacy') }}" style="transition: var(--transition-smooth);" aria-label="Privacy Policy">Privacy Policy</a></p>
     </div>
   </footer>
 
