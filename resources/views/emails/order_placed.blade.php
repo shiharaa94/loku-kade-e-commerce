@@ -27,8 +27,8 @@
         <!-- Main Body Content -->
         <tr>
             <td style="padding: 30px 25px;">
-                <h2 style="font-size: 20px; font-weight: 700; color: #0f172a; margin-top: 0; margin-bottom: 10px; font-family: 'Space Grotesk', Arial, sans-serif;">Thank You for Your Order!</h2>
-                <p style="font-size: 15px; line-height: 1.6; color: #475569; margin: 0 0 20px 0;">
+                <h2 style="font-size: 19px; font-weight: 700; color: #0f172a; margin-top: 0; margin-bottom: 10px; font-family: 'Space Grotesk', Arial, sans-serif;">Thank You for Your Order!</h2>
+                <p style="font-size: 14.5px; line-height: 1.6; color: #475569; margin: 0 0 20px 0;">
                     Dear <strong>{{ $order->customer_name }}</strong>,<br>
                     Your order has been successfully received and is currently being prepared for dispatch. We will send you another update once your package is on the way.
                 </p>
@@ -116,31 +116,66 @@
                 <!-- Action Button -->
                 <table border="0" cellpadding="0" cellspacing="0" width="100%">
                     <tr>
-                        <td align="center" style="padding: 10px 0 15px 0;">
+                        <td align="center" style="padding: 5px 0 20px 0;">
                             <a href="{{ url('/orders/track/' . $order->secure_token) }}" target="_blank" style="background: linear-gradient(135deg, #e12a1a 0%, #f97316 100%); color: #ffffff; display: inline-block; padding: 14px 30px; font-size: 15px; font-weight: 700; text-decoration: none; border-radius: 12px; box-shadow: 0 8px 16px rgba(225, 42, 26, 0.25); font-family: 'Space Grotesk', Arial, sans-serif; border: none; outline: none;">Track Your Package</a>
                         </td>
                     </tr>
                 </table>
+
+                <!-- WhatsApp Community & Channel Links Card -->
+                <table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: #f8fafc; border: 1.5px solid #e2e8f0; border-radius: 14px; padding: 18px; margin-top: 10px; text-align: center;">
+                    <tr>
+                        <td align="center">
+                            <p style="font-size: 14px; font-weight: 700; color: #334155; margin: 0 0 6px 0;">
+                                අපගේ සියලුම භාණ්ඩ හා මිල ගනන් 👇
+                            </p>
+                            <a href="https://www.lokukade.lk" target="_blank" style="font-size: 16px; font-weight: 800; color: #e12a1a; text-decoration: none; display: inline-block; margin-bottom: 16px;">
+                                🌐 www.lokukade.lk
+                            </a>
+
+                            <div style="margin-bottom: 10px;">
+                                <a href="https://chat.whatsapp.com/CJCovpx4T48KDnooTN2oB2" target="_blank" style="background-color: #25d366; color: #ffffff; display: inline-block; width: 85%; padding: 10px 14px; border-radius: 10px; font-size: 13.5px; font-weight: 700; text-decoration: none; box-shadow: 0 3px 8px rgba(37,211,102,0.2);">
+                                    👥 Follow this link to join Our WhatsApp community
+                                </a>
+                                <small style="font-size: 11px; color: #64748b; display: block; margin-top: 3px;">https://chat.whatsapp.com/CJCovpx4T48KDnooTN2oB2</small>
+                            </div>
+
+                            <div>
+                                <a href="https://whatsapp.com/channel/0029Vb80LU44dTnE13ErDb3Y" target="_blank" style="background-color: #075e54; color: #ffffff; display: inline-block; width: 85%; padding: 10px 14px; border-radius: 10px; font-size: 13.5px; font-weight: 700; text-decoration: none; box-shadow: 0 3px 8px rgba(7,94,84,0.2);">
+                                    📢 Follow the Loku Kade channel on WhatsApp
+                                </a>
+                                <small style="font-size: 11px; color: #64748b; display: block; margin-top: 3px;">https://whatsapp.com/channel/0029Vb80LU44dTnE13ErDb3Y</small>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+
+                <!-- 7-Day Parcel Notice Box at the bottom -->
+                <div style="background-color: #fef2f2; border: 1.5px solid #fca5a5; border-radius: 12px; padding: 14px 18px; margin-top: 20px; text-align: center;">
+                    <span style="font-size: 14px; font-weight: 700; color: #b91c1c; display: block; line-height: 1.4;">
+                        🔴 අද සිට දින 7ක් ඇතුලත පාර්සලය ලැබුනේ නැතිනම් අපව දැනුවත් කරන්න
+                    </span>
+                </div>
             </td>
         </tr>
 
         <!-- Footer Block -->
         <tr>
-            <td align="center" style="background-color: #fff7ed; padding: 30px 20px; border-top: 1px solid #fed7aa; text-align: center;">
-                <p style="font-size: 14px; margin: 0 0 12px 0; color: #475569; font-weight: 600;">Need assistance? We are here to help!</p>
+            <td align="center" style="background-color: #fff7ed; padding: 25px 20px; border-top: 1px solid #fed7aa; text-align: center;">
+                <p style="font-size: 14px; margin: 0 0 10px 0; color: #475569; font-weight: 600;">Need assistance? We are here to help!</p>
                 <!-- Support Row -->
-                <table border="0" cellpadding="0" cellspacing="0" style="margin-bottom: 20px;">
+                <table border="0" cellpadding="0" cellspacing="0" style="margin-bottom: 15px;">
                     <tr>
                         <td style="padding: 0 10px;">
                             <a href="https://wa.me/94706050500" target="_blank" style="color: #16a34a; font-size: 13px; font-weight: 700; text-decoration: none; display: inline-flex; align-items: center; gap: 4px;">
-                                <span style="font-size: 15px; vertical-align: middle;">💬</span> Message on WhatsApp
+                                <span style="font-size: 15px; vertical-align: middle;">💬</span> Message on WhatsApp (070 60 50 500)
                             </a>
                         </td>
                     </tr>
                 </table>
                 <p style="font-size: 12px; margin: 0; color: #94a3b8; font-family: 'Outfit', sans-serif;">
                     &copy; {{ date('Y') }} Loku Kade E-Commerce. All rights reserved.<br>
-                    Colombo, Sri Lanka.
+                    Polonnaruwa, Sri Lanka.
                 </p>
             </td>
         </tr>

@@ -318,30 +318,61 @@
         /* --- Pagination --- */
         .pagination-container {
             display: flex;
+            align-items: center;
             justify-content: center;
-            gap: 0.5rem;
+            gap: 0.35rem;
             margin-top: 3.5rem;
+            flex-wrap: wrap;
         }
 
-        .pagination-container a, .pagination-container span {
-            padding: 10px 18px;
+        .pagination-container a, 
+        .pagination-container span {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 8px 14px;
+            min-width: 38px;
+            height: 38px;
             background: #ffffff;
-            border: 1px solid #e5e7eb;
-            border-radius: 8px;
-            color: var(--text-secondary);
+            border: 1.5px solid #e5e7eb;
+            border-radius: 10px;
+            color: #374151;
             font-weight: 600;
+            font-size: 0.88rem;
             text-decoration: none;
-            transition: var(--transition-smooth);
+            transition: all 0.2s ease;
+            user-select: none;
         }
 
         .pagination-container a:hover {
-            border-color: var(--accent);
-            color: var(--accent);
+            border-color: #dc2626;
+            color: #dc2626;
+            background: #fff5f5;
+            transform: translateY(-1px);
         }
 
-        .pagination-container span {
-            background: #f3f4f6;
-            color: var(--text-muted);
+        .pagination-container .page-num.active {
+            background: linear-gradient(135deg, #dc2626 0%, #ef4444 100%) !important;
+            border-color: #dc2626 !important;
+            color: #ffffff !important;
+            font-weight: 700;
+            box-shadow: 0 4px 10px rgba(220, 38, 38, 0.25);
+        }
+
+        .pagination-container .page-nav.disabled {
+            background: #f8fafc;
+            border-color: #f1f5f9;
+            color: #94a3b8;
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+
+        .pagination-container .page-dots {
+            background: transparent;
+            border: none;
+            color: #94a3b8;
+            padding: 0 4px;
+            min-width: auto;
         }
 
         /* --- Category Sidebar --- */
@@ -623,10 +654,17 @@
             .product-card-footer { padding-top: 8px !important; }
 
             /* --- Pagination compact --- */
+            .pagination-container {
+                gap: 0.25rem !important;
+                margin-top: 2rem !important;
+            }
             .pagination-container a,
             .pagination-container span {
-                padding: 7px 12px !important;
+                padding: 6px 10px !important;
+                min-width: 32px !important;
+                height: 32px !important;
                 font-size: 0.8rem !important;
+                border-radius: 8px !important;
             }
         }
     </style>
@@ -1118,19 +1156,52 @@
                         @endforeach
                     </div>
 
-                    <!-- Pagination -->
+                    <!-- Pagination with Page Numbers -->
                     @if($products->hasPages())
+                        @php
+                            $currentPage = $products->currentPage();
+                            $lastPage = $products->lastPage();
+                            $startPage = max(1, $currentPage - 2);
+                            $endPage = min($lastPage, $currentPage + 2);
+                        @endphp
                         <div class="pagination-container">
+                            {{-- Previous Page Link --}}
                             @if($products->onFirstPage())
-                                <span><i class="bi bi-chevron-left me-1"></i> Prev</span>
+                                <span class="page-nav disabled"><i class="bi bi-chevron-left"></i> <span class="d-none d-sm-inline ms-1">Prev</span></span>
                             @else
-                                <a href="{{ $products->previousPageUrl() }}"><i class="bi bi-chevron-left me-1"></i> Prev</a>
+                                <a href="{{ $products->previousPageUrl() }}" class="page-nav"><i class="bi bi-chevron-left"></i> <span class="d-none d-sm-inline ms-1">Prev</span></a>
                             @endif
 
+                            {{-- First Page + Ellipsis if far --}}
+                            @if($startPage > 1)
+                                <a href="{{ $products->url(1) }}" class="page-num {{ $currentPage == 1 ? 'active' : '' }}">1</a>
+                                @if($startPage > 2)
+                                    <span class="page-dots">&hellip;</span>
+                                @endif
+                            @endif
+
+                            {{-- Page Number Range --}}
+                            @for($i = $startPage; $i <= $endPage; $i++)
+                                @if($i == $currentPage)
+                                    <span class="page-num active">{{ $i }}</span>
+                                @else
+                                    <a href="{{ $products->url($i) }}" class="page-num">{{ $i }}</a>
+                                @endif
+                            @endfor
+
+                            {{-- Last Page + Ellipsis if far --}}
+                            @if($endPage < $lastPage)
+                                @if($endPage < $lastPage - 1)
+                                    <span class="page-dots">&hellip;</span>
+                                @endif
+                                <a href="{{ $products->url($lastPage) }}" class="page-num {{ $currentPage == $lastPage ? 'active' : '' }}">{{ $lastPage }}</a>
+                            @endif
+
+                            {{-- Next Page Link --}}
                             @if($products->hasMorePages())
-                                <a href="{{ $products->nextPageUrl() }}">Next <i class="bi bi-chevron-right ms-1"></i></a>
+                                <a href="{{ $products->nextPageUrl() }}" class="page-nav"><span class="d-none d-sm-inline me-1">Next</span> <i class="bi bi-chevron-right"></i></a>
                             @else
-                                <span>Next <i class="bi bi-chevron-right ms-1"></i></span>
+                                <span class="page-nav disabled"><span class="d-none d-sm-inline me-1">Next</span> <i class="bi bi-chevron-right"></i></span>
                             @endif
                         </div>
                     @endif
