@@ -11,7 +11,16 @@ class PublicImagePathResolver
 
     public static function resolveAssetUrl(?string $path): ?string
     {
-        $normalized = self::normalize($path);
+        if (empty($path)) {
+            return null;
+        }
+
+        $trimmed = trim($path);
+        if (preg_match('/^https?:\/\//i', $trimmed)) {
+            return $trimmed;
+        }
+
+        $normalized = self::normalize($trimmed);
         if ($normalized === null) {
             return null;
         }

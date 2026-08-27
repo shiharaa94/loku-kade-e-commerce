@@ -607,8 +607,11 @@
     @php
         $ytVideoId = null;
         if (!empty($product['youtube_video_url'])) {
-            if (preg_match('%(?:youtube(?:-nocookie)?\.com/(?:[^/]+/.+/|(?:v|e(?:mbed)?)/|.*[?&]v=)|youtu\.be/)([^"&?/ ]{11})%i', $product['youtube_video_url'], $match)) {
+            $rawUrl = trim($product['youtube_video_url']);
+            if (preg_match('%(?:youtube(?:-nocookie)?\.com/(?:.*[?&]v=|shorts/|embed/|v/)|youtu\.be/)([^"&?/ ]{11})%i', $rawUrl, $match)) {
                 $ytVideoId = $match[1];
+            } elseif (preg_match('/^[a-zA-Z0-9_-]{11}$/', $rawUrl)) {
+                $ytVideoId = $rawUrl;
             }
         }
     @endphp

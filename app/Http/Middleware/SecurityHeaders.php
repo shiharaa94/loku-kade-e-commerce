@@ -36,15 +36,17 @@ class SecurityHeaders
         $response->headers->set('X-XSS-Protection', '1; mode=block');
 
         // 7. Content Security Policy (CSP)
-        $csp = "default-src 'self' https: data: blob:; " .
+        $csp = "default-src 'self' https: http: data: blob:; " .
                "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net https://code.jquery.com; " .
                "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net; " .
                "font-src 'self' https://fonts.gstatic.com https://cdn.jsdelivr.net data:; " .
-               "img-src 'self' data: blob: https:; " .
-               "connect-src 'self' https:; " .
+               "img-src 'self' data: blob: https: http: https://*.youtube.com https://*.ytimg.com; " .
+               "media-src 'self' https: http: data: blob: https://*.youtube.com; " .
+               "frame-src 'self' https://www.youtube.com https://www.youtube-nocookie.com https://youtube.com; " .
+               "connect-src 'self' https: http:; " .
                "frame-ancestors 'self'; " .
                "base-uri 'self'; " .
-               "form-action 'self' https:;";
+               "form-action 'self' https: http:;";
         
         $response->headers->set('Content-Security-Policy', $csp);
 
