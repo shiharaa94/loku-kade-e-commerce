@@ -1196,9 +1196,12 @@
         // Hide on DOMContentLoaded or window load
         document.addEventListener('DOMContentLoaded', hideLoader);
         window.addEventListener('load', hideLoader);
+        if (document.readyState === 'complete' || document.readyState === 'interactive') {
+            setTimeout(hideLoader, 300);
+        }
 
-        // Failsafe: Force hide loader after 2 seconds max (prevents getting stuck on slow connections)
-        setTimeout(hideLoader, 2000);
+        // Failsafe: Force hide loader after 1 second max
+        setTimeout(hideLoader, 1000);
 
         // Show loader on page transition (clicking links)
         document.querySelectorAll('a').forEach(link => {
