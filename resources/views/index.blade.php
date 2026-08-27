@@ -95,13 +95,18 @@
   }
   </script>
 
-  <!-- Google Fonts -->
+  <!-- Preload Critical LCP Hero Image -->
+  <link rel="preload" as="image" href="{{ asset('assets/images/hero_banner.webp') }}" type="image/webp" fetchpriority="high">
+
+  <!-- Google Fonts with display=swap & Preload -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&family=Space+Grotesk:wght@500;700&display=swap">
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
 
-  <!-- Bootstrap Icons -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <!-- Bootstrap Icons Asynchronously -->
+  <link rel="preload" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+  <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"></noscript>
 
   <!-- Custom Stylesheet -->
   <link rel="stylesheet" href="{{ asset('style.css') }}">
@@ -516,7 +521,7 @@
       <!-- Row 1: Logo, Navigation links, Call-to-actions -->
       <div class="header-top-row" style="display: flex; width: 100%; justify-content: space-between; align-items: center; gap: 1rem;">
           <a href="#" class="logo" id="logoLink">
-            <img src="{{ asset('assets/images/logo.jpg') }}" alt="Loku Kade Logo" style="height: 48px; border-radius: 50%; width: auto;">
+            <img src="{{ asset('assets/images/logo.webp') }}" alt="Loku Kade Logo" width="48" height="48" style="height: 48px; border-radius: 50%; width: 48px;">
             Loku <span>Kade</span>
           </a>
 
@@ -596,7 +601,7 @@
       </div>
 
       <div class="hero-image-wrap reveal active">
-        <img src="{{ asset('assets/images/hero_banner.jpg') }}" alt="Loku Kade Online Store Showcase" id="heroBannerImg" loading="eager">
+        <img src="{{ asset('assets/images/hero_banner.webp') }}" alt="Loku Kade Online Store Showcase" id="heroBannerImg" width="600" height="400" fetchpriority="high" decoding="async">
       </div>
     </div>
   </section>
@@ -719,7 +724,7 @@
   <section class="delivery-feature" id="delivery">
     <div class="container delivery-grid">
       <div class="delivery-img-wrap reveal">
-        <img src="{{ asset('assets/images/delivery_mockup.jpg') }}" alt="Doorstep Delivery Service Illustration" id="deliveryImg">
+        <img src="{{ asset('assets/images/delivery_mockup.webp') }}" alt="Doorstep Delivery Service Illustration" id="deliveryImg" width="500" height="350" loading="lazy" decoding="async">
       </div>
       <div class="delivery-text reveal">
         <h2>Free & Fast Delivery <br><span>Across Sri Lanka</span></h2>
