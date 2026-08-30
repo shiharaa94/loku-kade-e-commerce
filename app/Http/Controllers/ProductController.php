@@ -503,7 +503,6 @@ class ProductController extends Controller
             'youtube_video_url' => $product->youtube_video_url,
             'best_stock_id' => $bestStock ? $bestStock->id : null,
             'product_stocks' => $productStocks, // Pass all available stock tiers (if any price variants exist)
-            'fulfillment_type' => $product->fulfillment_type ?? 'direct',
         ];
 
         $relatedProductsRaw = Product::query()

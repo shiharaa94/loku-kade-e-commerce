@@ -21,7 +21,6 @@ class Product extends Model
         'is_catalog_visible',
         'youtube_video_url',
         'category_id',
-        'fulfillment_type',
     ];
 
     protected $appends = [

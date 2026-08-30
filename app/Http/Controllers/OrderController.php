@@ -90,6 +90,7 @@ class OrderController extends Controller
                 'total_amount' => $order->total_amount,
                 'courier_status' => $liveTracking['status_formatted'] ?? ($order->courier_status ?: 'Pending'),
                 'shipping_type' => $order->shipping_type ?? 'Courier',
+                'fulfillment_type' => $order->fulfillment_type ?: 'direct',
                 'is_shipping_available' => $isShippingAvailable,
                 'live_tracking' => $liveTracking,
                 'created_at' => $order->created_at ? $order->created_at->format('Y-m-d') : null,
@@ -204,6 +205,7 @@ class OrderController extends Controller
                 'receipt_image'       => $receiptImagePath,
                 'shipping_type'       => $request->shipping_type ?: 'Courier',
                 'shipping_cost'       => $shippingCost,
+                'fulfillment_type'    => $request->input('fulfillment_type', 'direct') ?: 'direct',
                 'commission'          => 0, // Direct customer orders have 0 commission
                 'upload'              => 0,
                 'notify'              => 0,

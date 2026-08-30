@@ -92,9 +92,6 @@ class CategoryAndReviewSeeder extends Seeder
             // Assign category
             $catIndex = $index % count($categories);
             $product->category_id = $categories[$catIndex]->id;
-            
-            // Assign fulfillment type
-            $product->fulfillment_type = $fulfillmentTypes[$index % 2];
             $product->save();
 
             // Create 3-6 reviews for each product

@@ -29,6 +29,7 @@ class OrderHeader extends Model
         'secure_token',
         'receipt_number',
         'receipt_image',
+        'fulfillment_type',
     ];
 
     protected static function booted()
