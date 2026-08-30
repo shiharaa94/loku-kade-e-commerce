@@ -435,4 +435,125 @@ class OrderController extends Controller
         
         return "Order {$order_number} status updated to 'Delivered' and review request email sent successfully to {$order->customer_email}!";
     }
+
+    /**
+     * Cancel / delete a pending order by the authenticated client.
+     */
+    public function clientCancelOrder(Request $request, $order_number)
+    {
+        if (!auth()->check()) {
+            return response()->json([
+                'status' => 401,
+                'message' => 'Please log in to cancel your order.'
+            ], 401);
+        }
+
+        $user = auth()->user();
+
+        $order = OrderHeader::where('order_number', $order_number)
+            ->where(function ($q) use ($user) {
+                $q->where('customer_email', $user->email)
+                  ->orWhere('agent_id', $user->id);
+            })
+            ->first();
+
+        if (!$order) {
+            return response()->json([
+                'status' => 404,
+                'message' => 'Order not found or you do not have permission to cancel this order.'
+            ], 404);
+        }
+
+        // Only allow cancellation if order status is pending
+        $rawStatus = strtolower(trim($order->courier_status ?? 'pending'));
+        if (!in_array($rawStatus, ['pending', ''])) {
+            return response()->json([
+                'status' => 400,
+                'message' => 'This order has already been processed or dispatched and cannot be cancelled online. Please contact support via WhatsApp.'
+            ], 400);
+        }
+
+        try {
+            DB::beginTransaction();
+
+            $order->load('details');
+
+            // 1. Prepare detailed snapshot for emails before deletion
+            $itemsSnapshot = [];
+            foreach ($order->details as $detail) {
+                $itemsSnapshot[] = [
+                    'product_id' => $detail->product_id,
+                    'product_name' => $detail->product_name,
+                    'quantity' => (int) $detail->quantity,
+                    'selling_price' => (float) $detail->selling_price,
+                    'amount' => (float) $detail->amount,
+                ];
+
+                // 2. Restore stock inventory
+                if (!empty($detail->stock_id)) {
+                    $stock = Stock::find($detail->stock_id);
+                    if ($stock) {
+                        $stock->increment('quantity', (int) $detail->quantity);
+                    }
+                } else {
+                    // Fallback to first stock row of this product
+                    $stock = Stock::where('product_id', $detail->product_id)->first();
+                    if ($stock) {
+                        $stock->increment('quantity', (int) $detail->quantity);
+                    }
+                }
+            }
+
+            $orderDataSnapshot = [
+                'order_number' => $order->order_number,
+                'customer_name' => $order->customer_name ?: ($user->first_name . ' ' . $user->last_name),
+                'customer_email' => $order->customer_email ?: $user->email,
+                'customer_pri_mobile' => $order->customer_pri_mobile ?: $user->pri_mobile,
+                'customer_sec_mobile' => $order->customer_sec_mobile ?: $user->sec_mobile,
+                'customer_address' => $order->customer_address ?: $user->address,
+                'customer_city' => $order->customer_city ?: $user->city,
+                'total_amount' => (float) $order->total_amount,
+                'items' => $itemsSnapshot,
+                'deleted_at' => now()->format('Y-m-d H:i:s T'),
+            ];
+
+            // 3. Delete order details and order header records
+            $order->details()->delete();
+            $order->delete();
+
+            DB::commit();
+
+            // 4. Send Email Notification to Admin (info@lokukade.lk)
+            try {
+                \Illuminate\Support\Facades\Mail::to('info@lokukade.lk')
+                    ->send(new \App\Mail\ClientOrderDeletedMail($orderDataSnapshot));
+            } catch (\Exception $adminMailEx) {
+                Log::error("Failed to send client order cancellation email to admin for order {$order_number}: " . $adminMailEx->getMessage());
+            }
+
+            // 5. Send Confirmation Email to Customer
+            if (!empty($orderDataSnapshot['customer_email']) && filter_var($orderDataSnapshot['customer_email'], FILTER_VALIDATE_EMAIL)) {
+                try {
+                    \Illuminate\Support\Facades\Mail::to($orderDataSnapshot['customer_email'])
+                        ->send(new \App\Mail\CustomerOrderCancelledMail($orderDataSnapshot));
+                } catch (\Exception $custMailEx) {
+                    Log::error("Failed to send cancellation confirmation email to customer {$orderDataSnapshot['customer_email']} for order {$order_number}: " . $custMailEx->getMessage());
+                }
+            }
+
+            return response()->json([
+                'status' => 200,
+                'message' => "Order #{$order_number} has been cancelled successfully."
+            ]);
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error("Error while client cancelling order {$order_number}: " . $e->getMessage() . "\n" . $e->getTraceAsString());
+
+            return response()->json([
+                'status' => 500,
+                'message' => 'An error occurred while cancelling your order. Please try again or contact WhatsApp support.'
+            ], 500);
+        }
+    }
 }

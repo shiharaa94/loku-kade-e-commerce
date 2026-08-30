@@ -50,6 +50,7 @@ Route::post('/orders/store', [OrderController::class, 'store'])->name('orders.st
 Route::get('/orders/track/{token}', [OrderController::class, 'showTrackingPage'])->name('orders.track');
 Route::get('/orders/review/{token}', [OrderController::class, 'showReviewPage'])->name('orders.review');
 Route::post('/orders/review/{token}/submit', [OrderController::class, 'submitOrderReviews'])->name('orders.submitReviews');
+Route::post('/orders/{order_number}/cancel', [OrderController::class, 'clientCancelOrder'])->name('orders.clientCancel')->middleware('auth');
 
 // --- Order Status Simulation / Testing Route ---
 Route::get('/test/orders/{order_number}/deliver', [OrderController::class, 'simulateDelivery'])->name('orders.simulateDelivery');

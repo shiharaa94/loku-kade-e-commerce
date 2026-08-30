@@ -667,6 +667,18 @@
         color: #15803d;
         font-weight: 700;
     }
+    .btn-cancel-order {
+        border-color: #fecaca;
+        background-color: #fff5f5;
+        color: #dc2626;
+        font-weight: 700;
+    }
+    .btn-cancel-order:hover {
+        background-color: #fee2e2;
+        border-color: #fca5a5;
+        color: #b91c1c;
+        transform: translateY(-1px);
+    }
     
     .review-item-card {
         display: flex;
@@ -1155,6 +1167,11 @@
                                             <a href="{{ route('orders.track', $order->secure_token) }}" class="action-btn btn-outline">
                                                 <i class="bi bi-geo-alt"></i> Track Order
                                             </a>
+                                            @if(in_array($rawStatus, ['pending', '']))
+                                                <button type="button" class="action-btn btn-cancel-order js-cancel-order-btn" data-order-number="{{ $order->order_number }}" data-url="{{ route('orders.clientCancel', $order->order_number) }}">
+                                                    <i class="bi bi-trash3"></i> Cancel Order
+                                                </button>
+                                            @endif
                                             @if($rawStatus === 'delivered')
                                                 @if($hasReviewed)
                                                     <button type="button" class="action-btn btn-reviewed-tag" disabled>
@@ -1546,6 +1563,102 @@
             e.preventDefault();
             const filter = $(this).data('filter');
             applyOrderFilter(filter);
+        });
+
+        // Cancel / Delete Order Click Handler
+        $(document).on('click', '.js-cancel-order-btn', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            const button = $(this);
+            const orderNumber = button.data('order-number');
+            const cancelUrl = button.data('url');
+            const orderCard = button.closest('.order-item-card');
+
+            if (!orderNumber || !cancelUrl) return;
+
+            const swalOptions = {
+                title: 'Cancel Order #' + orderNumber + '?',
+                text: 'Are you sure you want to cancel this pending order? This action cannot be undone.',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#dc2626',
+                cancelButtonColor: '#6b7280',
+                confirmButtonText: '<i class="bi bi-trash3"></i> Yes, Cancel Order',
+                cancelButtonText: 'Keep Order',
+                reverseButtons: true,
+                focusCancel: true
+            };
+
+            const performCancel = function() {
+                button.prop('disabled', true).html('<span class="spinner-border spinner-border-sm me-1"></span> Cancelling...');
+
+                $.ajax({
+                    url: cancelUrl,
+                    type: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') || '{{ csrf_token() }}'
+                    },
+                    success: function(response) {
+                        if (response.status === 200) {
+                            if (typeof Swal !== 'undefined') {
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Order Cancelled',
+                                    text: response.message || 'Your order has been cancelled successfully.',
+                                    timer: 2000,
+                                    showConfirmButton: false
+                                });
+                            } else {
+                                alert(response.message || 'Order cancelled successfully.');
+                            }
+
+                            // Smoothly animate and remove card from DOM
+                            orderCard.css('transition', 'all 0.3s ease').css('opacity', '0').css('transform', 'scale(0.95)');
+                            setTimeout(function() {
+                                orderCard.remove();
+                                
+                                // Update visible count check
+                                const activeFilter = $('.order-filter-btn.active').data('filter') || 'all';
+                                applyOrderFilter(activeFilter);
+
+                                // If no orders remaining at all, reload or show empty state
+                                if ($('#ordersListContainer .order-item-card').length === 0) {
+                                    window.location.reload();
+                                }
+                            }, 350);
+                        } else {
+                            if (typeof Swal !== 'undefined') {
+                                Swal.fire('Error', response.message || 'Failed to cancel order.', 'error');
+                            } else {
+                                alert(response.message || 'Failed to cancel order.');
+                            }
+                            button.prop('disabled', false).html('<i class="bi bi-trash3"></i> Cancel Order');
+                        }
+                    },
+                    error: function(xhr) {
+                        const errorMsg = (xhr.responseJSON && xhr.responseJSON.message) ? xhr.responseJSON.message : 'Something went wrong while cancelling the order.';
+                        if (typeof Swal !== 'undefined') {
+                            Swal.fire('Failed', errorMsg, 'error');
+                        } else {
+                            alert(errorMsg);
+                        }
+                        button.prop('disabled', false).html('<i class="bi bi-trash3"></i> Cancel Order');
+                    }
+                });
+            };
+
+            if (typeof Swal !== 'undefined') {
+                Swal.fire(swalOptions).then(function(result) {
+                    if (result.isConfirmed) {
+                        performCancel();
+                    }
+                });
+            } else {
+                if (confirm('Are you sure you want to cancel Order #' + orderNumber + '?')) {
+                    performCancel();
+                }
+            }
         });
     });
 </script>
