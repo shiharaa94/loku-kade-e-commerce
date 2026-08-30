@@ -522,7 +522,7 @@
       <!-- Row 1: Logo, Navigation links, Call-to-actions -->
       <div class="header-top-row" style="display: flex; width: 100%; justify-content: space-between; align-items: center; gap: 1rem;">
           <a href="#" class="logo" id="logoLink" aria-label="Loku Kade Home">
-            <img src="{{ asset('assets/images/logo.webp') }}" alt="Loku Kade Logo" width="48" height="48" style="height: 48px; border-radius: 50%; width: 48px;">
+            <img src="{{ asset('assets/images/logo.webp') }}" alt="Loku Kade Logo" width="48" height="48" style="height: 48px; width: 48px; border-radius: 50%; object-fit: cover; aspect-ratio: 1/1;">
             Loku <span>Kade</span>
           </a>
 
@@ -919,7 +919,7 @@
     <div class="container footer-grid">
       <div class="footer-col brand">
         <a href="#" class="logo" style="margin-bottom: 1.2rem;" aria-label="Loku Kade Home">
-          <img src="{{ asset('assets/images/logo.webp') }}" alt="Loku Kade Logo" width="48" height="48" style="height: 48px; border-radius: 50%; width: 48px;">
+          <img src="{{ asset('assets/images/logo.webp') }}" alt="Loku Kade Logo" width="48" height="48" style="height: 48px; width: 48px; border-radius: 50%; object-fit: cover; aspect-ratio: 1/1;">
           Loku <span>Kade</span>
         </a>
         <p>Loku Kade is your trusted online shopping store in Sri Lanka, bringing premium household, kitchen, and electronic items to your door at wholesale prices.</p>

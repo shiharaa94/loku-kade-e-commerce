@@ -41,6 +41,9 @@
   .pwa-banner-icon {
     width: 42px;
     height: 42px;
+    min-width: 42px;
+    max-width: 42px;
+    aspect-ratio: 1 / 1;
     border-radius: 10px;
     object-fit: cover;
     box-shadow: 0 2px 8px rgba(0,0,0,0.1);

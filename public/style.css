@@ -203,6 +203,16 @@ header.scrolled .container {
   font-family: var(--font-display);
 }
 
+.logo img {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  object-fit: cover;
+  aspect-ratio: 1 / 1;
+  flex-shrink: 0;
+  display: block;
+}
+
 .logo span {
   color: var(--primary-glow);
 }

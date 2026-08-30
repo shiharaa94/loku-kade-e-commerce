@@ -327,7 +327,7 @@
         }
         .header-top-row { gap: .5rem !important; }
         .logo { font-size: 1.1rem; gap: .42rem; }
-        .logo img { width: 36px; height: 36px !important; }
+        .logo img { width: 36px !important; height: 36px !important; min-width: 36px !important; max-width: 36px !important; aspect-ratio: 1 / 1 !important; object-fit: cover !important; border-radius: 50% !important; flex-shrink: 0 !important; }
         .mobile-header-actions { display: flex !important; align-items: center; gap: .4rem; }
         .mobile-header-action {
             width: 38px; height: 38px; border: 1px solid #fed7aa; border-radius: 12px;
@@ -520,7 +520,7 @@
       <!-- Row 1: Logo, Navigation links, Call-to-actions -->
       <div class="header-top-row" style="display: flex; width: 100%; justify-content: space-between; align-items: center; gap: 1rem;">
           <a href="{{ route('home') }}" class="logo" id="logoLink" aria-label="Loku Kade Home">
-            <img src="{{ asset('assets/images/logo.webp') }}" alt="Loku Kade Logo" width="48" height="48" style="height: 48px; border-radius: 50%; width: 48px;">
+            <img src="{{ asset('assets/images/logo.webp') }}" alt="Loku Kade Logo" width="48" height="48" style="height: 48px; width: 48px; border-radius: 50%; object-fit: cover; aspect-ratio: 1/1;">
             Loku <span>Kade</span>
           </a>
 
@@ -580,7 +580,7 @@
     <div class="container footer-grid">
       <div class="footer-col brand">
         <a href="{{ route('home') }}" class="logo" style="margin-bottom: 1.2rem;" aria-label="Loku Kade Home">
-          <img src="{{ asset('assets/images/logo.webp') }}" alt="Loku Kade Logo" width="48" height="48" style="height: 48px; border-radius: 50%; width: 48px;">
+          <img src="{{ asset('assets/images/logo.webp') }}" alt="Loku Kade Logo" width="48" height="48" style="height: 48px; width: 48px; border-radius: 50%; object-fit: cover; aspect-ratio: 1/1;">
           Loku <span>Kade</span>
         </a>
         <p>Loku Kade is your trusted online shopping store in Sri Lanka, bringing premium household, kitchen, and electronic items to your door at wholesale prices.</p>
