@@ -205,7 +205,6 @@ class OrderController extends Controller
                 'receipt_image'       => $receiptImagePath,
                 'shipping_type'       => $request->shipping_type ?: 'Courier',
                 'shipping_cost'       => $shippingCost,
-                'fulfillment_type'    => $request->input('fulfillment_type', 'direct') ?: 'direct',
                 'commission'          => 0, // Direct customer orders have 0 commission
                 'upload'              => 0,
                 'notify'              => 0,
