@@ -38,8 +38,13 @@
 
         /* --- Header Offset --- */
         .shop-page-wrapper {
-            margin-top: 110px;
+            margin-top: 140px;
             padding-bottom: 5rem;
+        }
+        @media (max-width: 991.98px) {
+            .shop-page-wrapper {
+                margin-top: 92px !important;
+            }
         }
 
         /* --- Shop Page Header --- */
@@ -804,15 +809,15 @@
 
                                         <div class="product-card-footer" style="display: flex; justify-content: space-between; align-items: center; margin-top: auto; padding-top: 8px; border-top: 1px solid #f3f4f6;">
                                             <div class="product-status-badge">
-                                                @if($inStock)
-                                                    <span class="stock-badge-green" style="font-size: 0.68rem; padding: 2px 5px; font-weight: 600; border-radius: 4px; display: inline-flex; align-items: center; gap: 4px;">
-                                                        <i class="bi bi-check-circle-fill" style="color: #10b981; font-size: 0.65rem;"></i> In Stock
-                                                    </span>
-                                                @else
-                                                    <span class="stock-badge-red" style="font-size: 0.68rem; padding: 2px 5px; font-weight: 600; border-radius: 4px; display: inline-flex; align-items: center; gap: 4px;">
-                                                        <i class="bi bi-x-circle-fill" style="color: #ef4444; font-size: 0.65rem;"></i> Out of Stock
-                                                    </span>
-                                                @endif
+                                                 @if($inStock)
+                                                     <span class="stock-badge-green" style="font-size: 0.68rem; padding: 2px 5px; font-weight: 600; border-radius: 4px; display: inline-flex; align-items: center; gap: 4px;">
+                                                         <i class="bi bi-check-circle-fill" style="color: #10b981; font-size: 0.65rem;"></i> In Stock ({{ $p['total_quantity'] }})
+                                                     </span>
+                                                 @else
+                                                     <span class="stock-badge-red" style="font-size: 0.68rem; padding: 2px 5px; font-weight: 600; border-radius: 4px; display: inline-flex; align-items: center; gap: 4px;">
+                                                         <i class="bi bi-x-circle-fill" style="color: #ef4444; font-size: 0.65rem;"></i> Out of Stock
+                                                     </span>
+                                                 @endif
                                             </div>
                                             <div style="display: flex; gap: 5px; align-items: center;">
                                                 @if($inStock)
@@ -923,7 +928,7 @@
                                             <div class="product-status-badge">
                                                 @if($inStock)
                                                     <span class="stock-badge-green" style="font-size: 0.68rem; padding: 2px 5px; font-weight: 600; border-radius: 4px; display: inline-flex; align-items: center; gap: 4px;">
-                                                        <i class="bi bi-check-circle-fill" style="color: #10b981; font-size: 0.65rem;"></i> In Stock
+                                                        <i class="bi bi-check-circle-fill" style="color: #10b981; font-size: 0.65rem;"></i> In Stock ({{ $p['total_quantity'] }})
                                                     </span>
                                                 @else
                                                     <span class="stock-badge-red" style="font-size: 0.68rem; padding: 2px 5px; font-weight: 600; border-radius: 4px; display: inline-flex; align-items: center; gap: 4px;">
@@ -1137,7 +1142,7 @@
                                         <div class="product-status-badge">
                                             @if($inStock)
                                                 <span class="stock-badge-green" style="font-size: 0.72rem; padding: 2px 6px; font-weight: 600; border-radius: 4px; display: inline-flex; align-items: center; gap: 4px;">
-                                                    <i class="bi bi-check-circle-fill" style="color: #10b981; font-size: 0.65rem;"></i> In Stock
+                                                    <i class="bi bi-check-circle-fill" style="color: #10b981; font-size: 0.65rem;"></i> In Stock ({{ $product['total_quantity'] }})
                                                 </span>
                                             @else
                                                 <span class="stock-badge-red" style="font-size: 0.72rem; padding: 2px 6px; font-weight: 600; border-radius: 4px; display: inline-flex; align-items: center; gap: 4px;">

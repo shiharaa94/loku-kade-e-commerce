@@ -177,7 +177,7 @@
                                  <div class="product-status-badge">
                                      @if($inStock)
                                          <span class="stock-badge-green" style="font-size: 0.72rem; padding: 2px 6px; font-weight: 600; border-radius: 4px; display: inline-flex; align-items: center; gap: 4px;">
-                                             <i class="bi bi-check-circle-fill" style="color: #10b981; font-size: 0.65rem;"></i> In Stock
+                                             <i class="bi bi-check-circle-fill" style="color: #10b981; font-size: 0.65rem;"></i> In Stock ({{ $product['total_quantity'] }})
                                          </span>
                                      @else
                                          <span class="stock-badge-red" style="font-size: 0.72rem; padding: 2px 6px; font-weight: 600; border-radius: 4px; display: inline-flex; align-items: center; gap: 4px;">

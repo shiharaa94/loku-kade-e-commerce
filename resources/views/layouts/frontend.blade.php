@@ -898,14 +898,19 @@
         // Add item to cart
         window.addToCart = function(product, openDrawer = true) {
             let cart = getCart();
+            let maxQty = parseInt(product.max_qty) || 999;
+            let addQty = parseInt(product.quantity) || 1;
             let existing = cart.find(item => item.product_id === product.product_id);
+
             if (existing) {
-                if (existing.quantity < product.max_qty) {
-                    existing.quantity += product.quantity || 1;
+                let allowedMax = parseInt(existing.max_qty) || maxQty;
+                if (existing.quantity + addQty <= allowedMax) {
+                    existing.quantity += addQty;
                 } else {
+                    existing.quantity = allowedMax;
                     Swal.fire({
                         title: 'Stock Limit',
-                        text: 'Maximum available stock reached for this product.',
+                        text: 'Only ' + allowedMax + ' unit(s) available in stock for this product.',
                         icon: 'warning',
                         confirmButtonColor: '#e12a1a',
                         background: '#fffcf9',
@@ -913,14 +918,15 @@
                     });
                 }
             } else {
+                let initialQty = Math.min(addQty, maxQty);
                 cart.push({
                     product_id: product.product_id,
                     stock_id: product.stock_id,
                     product_name: product.product_name,
                     selling_price: parseFloat(product.selling_price),
-                    quantity: product.quantity || 1,
+                    quantity: initialQty,
                     image: product.image,
-                    max_qty: product.max_qty
+                    max_qty: maxQty
                 });
             }
             saveCart(cart);

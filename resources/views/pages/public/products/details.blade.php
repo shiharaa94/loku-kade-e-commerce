@@ -31,11 +31,11 @@
         }
 
         .catalog-wrap {
-            padding: 110px 0 50px;
+            padding: 145px 0 50px;
             background: transparent;
         }
-        @media (max-width: 767.98px) {
-            .catalog-wrap { padding: 92px 0 25px !important; }
+        @media (max-width: 991.98px) {
+            .catalog-wrap { padding: 95px 0 25px !important; }
             .details-nav { margin-bottom: 1rem; padding: 0 14px; }
             .btn-back { width: 36px; height: 36px; font-size: 1.05rem; box-shadow: none; }
             .product-details-container {
@@ -715,7 +715,7 @@
                         
                         @if(($product['total_quantity'] ?? 0) > 0)
                             <div class="details-stock-status">
-                                <i class="bi bi-check-circle-fill"></i> In Stock (Real-time)
+                                <i class="bi bi-check-circle-fill"></i> In Stock ({{ $product['total_quantity'] }} items available)
                             </div>
                         @else
                             <div class="details-stock-status out">
@@ -771,6 +771,7 @@
                                     <input type="number" id="inputQuantity" value="1" min="1" max="{{ $product['total_quantity'] }}" class="border-0 text-center fw-bold w-100" readonly style="background: transparent; box-shadow: none; color: #111827; font-size: 1.1rem; padding: 0; outline: none;">
                                     <button class="btn btn-sm px-3 py-2 border-0" id="btnQtyPlus"><i class="bi bi-plus fs-5"></i></button>
                                 </div>
+                                <span class="text-muted small">(Max: {{ $product['total_quantity'] }})</span>
                             </div>
 
                             <!-- On-Site Checkout Form Section -->
@@ -950,7 +951,7 @@
                             
                             <div class="related-card-footer">
                                 @if(($relProduct['total_quantity'] ?? 0) > 0)
-                                    <span class="related-qty-status"><i class="bi bi-check-circle-fill"></i> In Stock</span>
+                                    <span class="related-qty-status"><i class="bi bi-check-circle-fill"></i> In Stock ({{ $relProduct['total_quantity'] }})</span>
                                 @else
                                     <span class="related-qty-status out"><i class="bi bi-x-circle-fill"></i> Out of Stock</span>
                                 @endif
@@ -1179,6 +1180,19 @@
                 if (current < max) {
                     inputQuantity.val(current + 1);
                     updateCheckoutSummary();
+                } else {
+                    if (typeof Swal !== 'undefined') {
+                        Swal.fire({
+                            title: 'Stock Limit',
+                            text: 'Only ' + max + ' item' + (max > 1 ? 's' : '') + ' available in stock for this product.',
+                            icon: 'warning',
+                            confirmButtonColor: '#e12a1a',
+                            background: '#fffcf9',
+                            color: '#111827'
+                        });
+                    } else {
+                        alert('Only ' + max + ' items available in stock.');
+                    }
                 }
             });
 
