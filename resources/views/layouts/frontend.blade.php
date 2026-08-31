@@ -524,6 +524,17 @@
             Loku <span>Kade</span>
           </a>
 
+          <div class="header-search-box d-none d-lg-block">
+            <form action="{{ route('products.shop') }}" method="GET" class="desktop-search-form" role="search">
+              <i class="bi bi-search search-icon"></i>
+              <input type="text" name="q" value="{{ request('q') }}" placeholder="Search products in Loku Kade..." aria-label="Search products" autocomplete="off">
+              @if(request('q'))
+                <a href="{{ route('products.shop') }}" class="search-clear-btn" title="Clear search"><i class="bi bi-x-circle-fill"></i></a>
+              @endif
+              <button type="submit" class="search-btn">Search</button>
+            </form>
+          </div>
+
           <nav id="navDrawer">
             <a href="{{ route('home') }}#hero">Home</a>
             <a href="{{ route('home') }}#trackOrder">Track Order</a>

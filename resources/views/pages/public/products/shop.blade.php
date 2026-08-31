@@ -1024,22 +1024,38 @@
                     </div>
                 @else
                     <!-- Toolbar & Inline Sort (desktop only) -->
-                    <div class="d-none d-lg-flex justify-content-between align-items-center mb-3">
+                    <div class="d-none d-lg-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
                         <span class="text-muted small" style="font-family: 'Outfit', sans-serif;">
                             Showing {{ $products->firstItem() ?? 0 }}-{{ $products->lastItem() ?? 0 }} of {{ $products->total() }} items
+                            @if($search)
+                                for "<strong>{{ $search }}</strong>"
+                            @endif
                         </span>
-                        <form action="{{ route('products.shop') }}" method="GET" id="shopForm" class="d-flex align-items-center gap-2">
-                            <input type="hidden" name="category" value="{{ $selectedCategory }}">
-                            <input type="hidden" name="q" value="{{ $search }}">
-                            <div class="d-flex align-items-center border rounded bg-white px-2 py-1" style="font-size: 0.85rem; border-color: #d1d5db; min-width: 170px;">
-                                <i class="bi bi-sort-down text-secondary me-2" style="font-size: 1.1rem;"></i>
-                                <select name="sort" id="productSort" class="border-0 bg-transparent flex-grow-1" style="outline: none; cursor: pointer; font-size: 0.85rem; color: #4b5563; font-weight: 500; padding: 2px 0;">
-                                    <option value="default" {{ $sort == 'default' ? 'selected' : '' }}>Default Sorting</option>
-                                    <option value="asc" {{ $sort == 'asc' ? 'selected' : '' }}>Price: Low to High</option>
-                                    <option value="desc" {{ $sort == 'desc' ? 'selected' : '' }}>Price: High to Low</option>
-                                </select>
-                            </div>
-                        </form>
+                        
+                        <div class="d-flex align-items-center gap-2">
+                            {{-- Desktop In-Shop Search --}}
+                            <form action="{{ route('products.shop') }}" method="GET" class="d-flex align-items-center" style="position: relative; width: 260px;">
+                                <i class="bi bi-search" style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: #9ca3af; font-size: 0.85rem;"></i>
+                                <input type="text" name="q" value="{{ $search }}" placeholder="Search products in catalog..." style="width: 100%; padding: 6px 10px 6px 32px; border: 1.5px solid #d1d5db; border-radius: 20px; font-size: 0.84rem; outline: none; background: #fff; font-family: 'Outfit', sans-serif;">
+                                @if($selectedCategory)
+                                    <input type="hidden" name="category" value="{{ $selectedCategory }}">
+                                @endif
+                                <input type="hidden" name="sort" value="{{ $sort }}">
+                            </form>
+
+                            <form action="{{ route('products.shop') }}" method="GET" id="shopForm" class="d-flex align-items-center gap-2">
+                                <input type="hidden" name="category" value="{{ $selectedCategory }}">
+                                <input type="hidden" name="q" value="{{ $search }}">
+                                <div class="d-flex align-items-center border rounded bg-white px-2 py-1" style="font-size: 0.85rem; border-color: #d1d5db; min-width: 170px;">
+                                    <i class="bi bi-sort-down text-secondary me-2" style="font-size: 1.1rem;"></i>
+                                    <select name="sort" id="productSort" class="border-0 bg-transparent flex-grow-1" style="outline: none; cursor: pointer; font-size: 0.85rem; color: #4b5563; font-weight: 500; padding: 2px 0;">
+                                        <option value="default" {{ $sort == 'default' ? 'selected' : '' }}>Default Sorting</option>
+                                        <option value="asc" {{ $sort == 'asc' ? 'selected' : '' }}>Price: Low to High</option>
+                                        <option value="desc" {{ $sort == 'desc' ? 'selected' : '' }}>Price: High to Low</option>
+                                    </select>
+                                </div>
+                            </form>
+                        </div>
                     </div>
 
                     <!-- Products Grid -->
