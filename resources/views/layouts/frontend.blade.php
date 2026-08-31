@@ -57,10 +57,134 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 
   <!-- Custom Stylesheet -->
-  <link rel="stylesheet" href="{{ asset('style.css') }}">
+  <link rel="stylesheet" href="{{ asset('style.css') }}?v={{ file_exists(public_path('style.css')) ? filemtime(public_path('style.css')) : '1.2' }}">
 
-  <!-- Custom Cart Drawer Styling -->
+  <!-- Custom Styles (Cart Drawer & Desktop Search Bar) -->
   <style>
+    /* --- Header Layout & Desktop Search Bar Below Nav Links --- */
+    header {
+      padding: 0.65rem 0 0.75rem !important;
+    }
+
+    header .container {
+      display: flex !important;
+      flex-direction: column !important;
+      align-items: center !important;
+      gap: 0.6rem !important;
+      height: auto !important;
+    }
+
+    .header-top-row {
+      display: flex !important;
+      width: 100% !important;
+      justify-content: space-between !important;
+      align-items: center !important;
+      gap: 1rem !important;
+    }
+
+    .header-search-bottom-row {
+      display: none;
+    }
+
+    @media (min-width: 992px) {
+      .header-search-bottom-row {
+        display: flex !important;
+        justify-content: center !important;
+        width: 100% !important;
+      }
+
+      .header-search-bottom-row .desktop-search-form {
+        width: 100% !important;
+        max-width: 600px !important;
+        background: #ffffff !important;
+        border: 1.5px solid #d1d5db !important;
+        border-radius: 99px !important;
+        padding: 4px 6px 4px 18px !important;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05) !important;
+        display: flex !important;
+        align-items: center !important;
+        transition: all 0.25s ease !important;
+      }
+
+      .header-search-bottom-row .desktop-search-form:hover {
+        border-color: #9ca3af !important;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08) !important;
+      }
+
+      .header-search-bottom-row .desktop-search-form:focus-within {
+        background: #ffffff !important;
+        border-color: #ff1944 !important;
+        box-shadow: 0 0 0 3px rgba(255, 25, 68, 0.15) !important;
+      }
+
+      .header-search-bottom-row .desktop-search-form .search-icon {
+        color: #9ca3af !important;
+        font-size: 0.95rem !important;
+        margin-right: 10px !important;
+        flex-shrink: 0 !important;
+      }
+
+      .header-search-bottom-row .desktop-search-form:focus-within .search-icon {
+        color: #ff1944 !important;
+      }
+
+      .header-search-bottom-row .desktop-search-form input {
+        flex: 1 !important;
+        border: none !important;
+        background: transparent !important;
+        outline: none !important;
+        font-size: 0.88rem !important;
+        color: #111827 !important;
+        font-family: inherit !important;
+        min-width: 0 !important;
+        padding: 6px 0 !important;
+        box-shadow: none !important;
+      }
+
+      .header-search-bottom-row .desktop-search-form input::placeholder {
+        color: #9ca3af !important;
+      }
+
+      .header-search-bottom-row .desktop-search-form .search-clear-btn {
+        color: #9ca3af !important;
+        font-size: 0.95rem !important;
+        margin-right: 8px !important;
+        display: flex !important;
+        align-items: center !important;
+        text-decoration: none !important;
+      }
+
+      .header-search-bottom-row .desktop-search-form .search-clear-btn:hover {
+        color: #4b5563 !important;
+      }
+
+      .header-search-bottom-row .desktop-search-form .search-btn {
+        background: linear-gradient(135deg, #ff1944 0%, #ea580c 100%) !important;
+        color: #ffffff !important;
+        border: none !important;
+        border-radius: 99px !important;
+        padding: 7px 20px !important;
+        font-size: 0.82rem !important;
+        font-weight: 700 !important;
+        letter-spacing: 0.2px !important;
+        cursor: pointer !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        gap: 6px !important;
+        box-shadow: 0 2px 6px rgba(255, 25, 68, 0.2) !important;
+        transition: all 0.2s ease !important;
+        white-space: nowrap !important;
+        flex-shrink: 0 !important;
+        line-height: 1 !important;
+      }
+
+      .header-search-bottom-row .desktop-search-form .search-btn:hover {
+        background: linear-gradient(135deg, #e5002b 0%, #d97706 100%) !important;
+        transform: translateY(-1px) !important;
+        box-shadow: 0 4px 10px rgba(255, 25, 68, 0.3) !important;
+      }
+    }
+
     /* --- Custom Cart Drawer --- */
     .cart-drawer {
         position: fixed;
@@ -524,17 +648,6 @@
             Loku <span>Kade</span>
           </a>
 
-          <div class="header-search-box d-none d-lg-block">
-            <form action="{{ route('products.shop') }}" method="GET" class="desktop-search-form" role="search">
-              <i class="bi bi-search search-icon"></i>
-              <input type="text" name="q" value="{{ request('q') }}" placeholder="Search products in Loku Kade..." aria-label="Search products" autocomplete="off">
-              @if(request('q'))
-                <a href="{{ route('products.shop') }}" class="search-clear-btn" title="Clear search"><i class="bi bi-x-circle-fill"></i></a>
-              @endif
-              <button type="submit" class="search-btn">Search</button>
-            </form>
-          </div>
-
           <nav id="navDrawer">
             <a href="{{ route('home') }}#hero">Home</a>
             <a href="{{ route('home') }}#trackOrder">Track Order</a>
@@ -576,6 +689,20 @@
             </button>
           </div>
 
+      </div>
+
+      <!-- Row 2: Desktop Search Bar (Inside header, directly below links) -->
+      <div class="header-search-bottom-row">
+        <form action="{{ route('products.shop') }}" method="GET" class="desktop-search-form" role="search">
+          <i class="bi bi-search search-icon"></i>
+          <input type="text" name="q" value="{{ request('q') }}" placeholder="Search products, electronics, kitchen items in Loku Kade..." aria-label="Search products" autocomplete="off">
+          @if(request('q'))
+            <a href="{{ route('products.shop') }}" class="search-clear-btn" title="Clear search"><i class="bi bi-x-circle-fill"></i></a>
+          @endif
+          <button type="submit" class="search-btn">
+            <i class="bi bi-search"></i> <span>Search</span>
+          </button>
+        </form>
       </div>
     </div>
   </header>
