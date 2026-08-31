@@ -31,7 +31,7 @@ Route::get('/terms', function () {
 
 // --- Shop & Product Details ---
 Route::get('/shop', [ProductController::class, 'shop'])->name('products.shop');
-Route::get('/shop/product/{id}', [ProductController::class, 'publicProductDetails'])->name('products.publicDetails');
+Route::get('/shop/product/{id}/{slug?}', [ProductController::class, 'publicProductDetails'])->name('products.publicDetails');
 Route::post('/shop/product/{id}/review', [ProductController::class, 'storeReview'])->name('products.storeReview');
 Route::get('/checkout', [ProductController::class, 'checkout'])->name('products.checkout');
 

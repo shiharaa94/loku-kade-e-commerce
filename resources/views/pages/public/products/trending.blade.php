@@ -113,7 +113,7 @@
                         $avg = (float) ($product['avg_rating'] ?? 0);
                         $count = (int) ($product['reviews_count'] ?? 0);
                     @endphp
-                    <article class="product-card js-card" data-id="{{ $product['id'] }}">
+                    <article class="product-card js-card" data-id="{{ $product['id'] }}" data-url="{{ route('products.publicDetails', ['id' => $product['id'], 'slug' => \Illuminate\Support\Str::slug($product['product_name'])]) }}">
                         <div class="product-media">
                             @if($isDiscounted)
                                 <span class="discount-tag" style="background: #ef4444;">-{{ $product['discount_percentage'] }}% Off</span>
@@ -222,8 +222,8 @@
             // Product card redirect
             $('.js-card').on('click', function(e) {
                 if ($(e.target).closest('.order-btn, .js-add-to-cart-btn').length === 0) {
-                    const id = $(this).data('id');
-                    window.location.href = '{{ url("/shop/product") }}/' + id;
+                    const url = $(this).data('url') || ('{{ url("/shop/product") }}/' + $(this).data('id'));
+                    window.location.href = url;
                 }
             });
 

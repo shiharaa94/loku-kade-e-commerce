@@ -46,4 +46,14 @@ class Product extends Model
     {
         return PublicImagePathResolver::resolveAssetUrl($this->main_image);
     }
+
+    public function getSlugAttribute(): string
+    {
+        return \Illuminate\Support\Str::slug($this->product_name ?: 'product');
+    }
+
+    public function getPublicUrlAttribute(): string
+    {
+        return route('products.publicDetails', ['id' => $this->id, 'slug' => $this->slug]);
+    }
 }

@@ -42,7 +42,7 @@
     <!-- Dynamic Product Pages -->
     @foreach($products as $product)
     <url>
-        <loc>{{ route('products.publicDetails', ['id' => $product->id]) }}</loc>
+        <loc>{{ route('products.publicDetails', ['id' => $product->id, 'slug' => $product->slug]) }}</loc>
         <lastmod>{{ $product->updated_at ? $product->updated_at->format('Y-m-d') : date('Y-m-d') }}</lastmod>
         <changefreq>daily</changefreq>
         <priority>0.8</priority>

@@ -1013,7 +1013,7 @@
                             $relWaUrl = "https://wa.me/94706050500?text=" . urlencode($relWaMsg);
                         @endphp
                         
-                        <a href="{{ route('products.publicDetails', $relProduct['id']) }}" class="related-card">
+                        <a href="{{ route('products.publicDetails', ['id' => $relProduct['id'], 'slug' => \Illuminate\Support\Str::slug($relProduct['product_name'])]) }}" class="related-card">
                             <div class="related-card-media">
                                 @if($relProduct['has_discount'] && $relProduct['discount_percentage'] > 0)
                                     <span class="related-discount-badge">-{{ $relProduct['discount_percentage'] }}% OFF</span>

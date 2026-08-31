@@ -147,6 +147,8 @@ class ProductController extends Controller
                 'avg_rating' => $avgRating,
                 'reviews_count' => $reviewsCount,
                 'sales_volume' => (int) $product->sales_volume,
+                'slug' => $product->slug,
+                'public_url' => $product->public_url,
             ];
         });
 
@@ -297,6 +299,8 @@ class ProductController extends Controller
                 'avg_rating' => $avgRating,
                 'reviews_count' => $reviewsCount,
                 'sales_volume' => (int) $product->sales_volume,
+                'slug' => $product->slug,
+                'public_url' => $product->public_url,
             ];
         });
     }
@@ -455,12 +459,18 @@ class ProductController extends Controller
         ]);
     }
 
-    public function publicProductDetails($id)
+    public function publicProductDetails($id, $slug = null)
     {
         $product = Product::with(['subImages:id,product_id,image_path'])->findOrFail($id);
 
         if (!$product->is_catalog_visible) {
             abort(404);
+        }
+
+        // 301 Redirect to canonical SEO slug URL if slug is missing or outdated
+        $correctSlug = $product->slug;
+        if (is_null($slug) || $slug !== $correctSlug) {
+            return redirect()->route('products.publicDetails', ['id' => $product->id, 'slug' => $correctSlug], 301);
         }
 
         $productStocks = DB::table('stocks')
@@ -472,15 +482,24 @@ class ProductController extends Controller
 
         $totalQuantity = $productStocks->sum('quantity');
 
-        $bestStock = $productStocks
-            ->sortBy(function ($stock) {
-                $discountAmount = ((int) $stock->dis_status === 1 && (float) $stock->discount > 0)
-                    ? min((float) $stock->discount, (float) $stock->selling_price)
-                    : 0;
+        if ($totalQuantity === 0) {
+            $fallbackStocks = DB::table('stocks')
+                ->select('id', 'selling_price', 'discount', 'dis_status', DB::raw('0 as quantity'))
+                ->where('product_id', $product->id)
+                ->orderBy('id', 'desc')
+                ->get();
+            $bestStock = $fallbackStocks->first();
+        } else {
+            $bestStock = $productStocks
+                ->sortBy(function ($stock) {
+                    $discountAmount = ((int) $stock->dis_status === 1 && (float) $stock->discount > 0)
+                        ? min((float) $stock->discount, (float) $stock->selling_price)
+                        : 0;
 
-                return max((float) $stock->selling_price - $discountAmount, 0);
-            })
-            ->first();
+                    return max((float) $stock->selling_price - $discountAmount, 0);
+                })
+                ->first();
+        }
 
         $originalPrice = $bestStock ? (float) $bestStock->selling_price : null;
         $discountAmount = 0;
@@ -659,7 +678,7 @@ class ProductController extends Controller
     public function dynamicSitemap()
     {
         $products = Product::query()
-            ->select('id', 'updated_at')
+            ->select('id', 'product_name', 'updated_at')
             ->where('is_catalog_visible', true)
             ->orderByDesc('updated_at')
             ->get();
