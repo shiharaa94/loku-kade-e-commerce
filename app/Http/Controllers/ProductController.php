@@ -664,8 +664,11 @@ class ProductController extends Controller
             ->orderByDesc('updated_at')
             ->get();
 
+        $categories = \App\Models\Category::all();
+
         return response()->view('pages.public.sitemap', [
-            'products' => $products
+            'products' => $products,
+            'categories' => $categories,
         ])->header('Content-Type', 'text/xml');
     }
 

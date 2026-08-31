@@ -10,15 +10,27 @@
   <!-- Primary SEO Meta Tags -->
   <title>@yield('title', 'Loku Kade - Premium Wholesale & Retail E-Commerce in Sri Lanka')</title>
   <meta name="description" content="@yield('meta_description', 'Explore high-quality household items, electronics, and kitchen accessories at Loku Kade. Fast Cash on Delivery island-wide.')">
-  <meta name="keywords" content="@yield('meta_keywords', 'Loku Kade, online shopping Sri Lanka, cash on delivery, kitchen accessories, electronics')">
+  <meta name="keywords" content="@yield('meta_keywords', 'Loku Kade, online shopping Sri Lanka, cash on delivery, kitchen accessories, electronics, wholesale retail Sri Lanka')">
   <meta name="author" content="Loku Kade">
+  <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+  <link rel="canonical" href="{{ url()->current() }}">
 
   <!-- Open Graph Meta Tags -->
-  <meta property="og:type" content="website">
-  <meta property="og:url" content="{{ request()->url() }}">
+  <meta property="og:site_name" content="Loku Kade">
+  <meta property="og:type" content="@yield('og_type', 'website')">
+  <meta property="og:url" content="{{ url()->current() }}">
   <meta property="og:title" content="@yield('title', 'Loku Kade - Premium Wholesale & Retail E-Commerce')">
-  <meta property="og:description" content="@yield('meta_description', 'Explore high-quality household items, electronics, and kitchen accessories.')">
-  <meta property="og:image" content="{{ asset('assets/images/logo.jpg') }}">
+  <meta property="og:description" content="@yield('meta_description', 'Explore high-quality household items, electronics, and kitchen accessories at Loku Kade.')">
+  <meta property="og:image" content="@yield('og_image', asset('assets/images/logo.webp'))">
+
+  <!-- Twitter Card Meta Tags -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="@yield('title', 'Loku Kade - Premium Wholesale & Retail E-Commerce')">
+  <meta name="twitter:description" content="@yield('meta_description', 'Explore high-quality household items, electronics, and kitchen accessories at Loku Kade.')">
+  <meta name="twitter:image" content="@yield('og_image', asset('assets/images/logo.webp'))">
+
+  <!-- Structured Data (JSON-LD Schema) -->
+  @yield('schema')
 
   <!-- Favicon Configuration -->
   <link rel="icon" type="image/png" href="{{ asset('assets/images/favicon.png') }}">

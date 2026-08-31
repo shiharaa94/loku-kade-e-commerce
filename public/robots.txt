@@ -1,2 +1,8 @@
 User-agent: *
-Disallow:
+Allow: /
+Disallow: /admin/
+Disallow: /admin
+Disallow: /filament/
+Disallow: /api/
+
+Sitemap: https://lokukade.lk/sitemap.xml

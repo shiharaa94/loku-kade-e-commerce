@@ -1,6 +1,89 @@
 @extends('layouts.frontend')
 
+@php
+    $metaDesc = !empty($product['short_description']) 
+        ? \Illuminate\Support\Str::limit(strip_tags($product['short_description']), 155) 
+        : "Buy {$product['product_name']} at best price in Sri Lanka. Islandwide cash on delivery from Loku Kade.";
+    $productImage = $product['main_image_url'] ?? ($product['images'][0] ?? asset('assets/images/logo.webp'));
+    $productPrice = (float) ($product['discounted_price'] ?? $product['price'] ?? 0);
+    $inStock = ($product['total_quantity'] ?? 0) > 0;
+
+    $schemaImages = !empty($product['images']) ? $product['images'] : [$productImage];
+    $productSchema = [
+        '@context' => 'https://schema.org/',
+        '@type' => 'Product',
+        'name' => $product['product_name'],
+        'image' => $schemaImages,
+        'description' => strip_tags($product['short_description'] ?? $metaDesc),
+        'sku' => 'LK-' . $product['id'],
+        'brand' => [
+            '@type' => 'Brand',
+            'name' => 'Loku Kade',
+        ],
+        'offers' => [
+            '@type' => 'Offer',
+            'url' => url()->current(),
+            'priceCurrency' => 'LKR',
+            'price' => number_format($productPrice, 2, '.', ''),
+            'priceValidUntil' => date('Y-12-31', strtotime('+1 year')),
+            'availability' => $inStock ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
+            'itemCondition' => 'https://schema.org/NewCondition',
+            'seller' => [
+                '@type' => 'Organization',
+                'name' => 'Loku Kade',
+            ],
+        ],
+    ];
+
+    if (($reviewsCount ?? 0) > 0) {
+        $productSchema['aggregateRating'] = [
+            '@type' => 'AggregateRating',
+            'ratingValue' => (string) $avgRating,
+            'reviewCount' => (string) $reviewsCount,
+            'bestRating' => '5',
+            'worstRating' => '1',
+        ];
+    }
+
+    $breadcrumbSchema = [
+        '@context' => 'https://schema.org',
+        '@type' => 'BreadcrumbList',
+        'itemListElement' => [
+            [
+                '@type' => 'ListItem',
+                'position' => 1,
+                'name' => 'Home',
+                'item' => url('/'),
+            ],
+            [
+                '@type' => 'ListItem',
+                'position' => 2,
+                'name' => 'Shop',
+                'item' => route('products.shop'),
+            ],
+            [
+                '@type' => 'ListItem',
+                'position' => 3,
+                'name' => $product['product_name'],
+                'item' => url()->current(),
+            ],
+        ],
+    ];
+@endphp
+
 @section('title', $product['product_name'] . ' - Loku Kade')
+@section('meta_description', $metaDesc)
+@section('og_type', 'product')
+@section('og_image', $productImage)
+
+@section('schema')
+<script type="application/ld+json">
+{!! json_encode($productSchema, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) !!}
+</script>
+<script type="application/ld+json">
+{!! json_encode($breadcrumbSchema, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) !!}
+</script>
+@endsection
 
 @section('styles')
     <style>
