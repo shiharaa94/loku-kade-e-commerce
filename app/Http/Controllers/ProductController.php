@@ -204,8 +204,7 @@ class ProductController extends Controller
             })
             ->select($selectFields)
             ->with(['subImages:id,product_id,image_path'])
-            ->where('products.is_catalog_visible', true)
-            ->whereRaw('COALESCE(stock_summary.total_quantity, 0) > 0');
+            ->where('products.is_catalog_visible', true);
     }
 
     private function formatProductsCollection($productsCollection)
@@ -224,7 +223,6 @@ class ProductController extends Controller
                 'dis_status',
                 DB::raw('SUM(quantity) as quantity')
             )
-            ->where('quantity', '>', 0)
             ->whereIn('product_id', $productIds)
             ->groupBy('id', 'product_id', 'selling_price', 'discount', 'dis_status')
             ->get()
@@ -238,10 +236,14 @@ class ProductController extends Controller
             ->keyBy('product_id');
 
         return $productsCollection->map(function (Product $product) use ($stockRowsByProduct, $reviewStats) {
-            $productStocks = collect($stockRowsByProduct->get($product->id, []));
-            $totalQuantity = (int) ($product->catalog_total_quantity ?? $productStocks->sum('quantity'));
+            $allProductStocks = collect($stockRowsByProduct->get($product->id, []));
+            $inStockBatches = $allProductStocks->where('quantity', '>', 0);
+            
+            // Prefer in-stock batch for pricing, or fallback to any available stock batch
+            $targetStocks = $inStockBatches->isNotEmpty() ? $inStockBatches : $allProductStocks;
+            $totalQuantity = (int) ($product->catalog_total_quantity ?? $inStockBatches->sum('quantity'));
 
-            $bestStock = $productStocks
+            $bestStock = $targetStocks
                 ->sortBy(function ($stock) {
                     $discountAmount = ((int) $stock->dis_status === 1 && (float) $stock->discount > 0)
                         ? min((float) $stock->discount, (float) $stock->selling_price)
@@ -303,7 +305,7 @@ class ProductController extends Controller
     {
         $search = trim((string) $request->query('q', ''));
         $sort = (string) $request->query('sort', 'default');
-        $selectedCategory = $request->query('category', '');
+        $selectedCategory = trim((string) $request->query('category', ''));
 
         $baseQuery = $this->getBaseProductQuery();
 
@@ -315,7 +317,22 @@ class ProductController extends Controller
         }
 
         if ($selectedCategory !== '') {
-            $baseQuery->where('products.category_id', $selectedCategory);
+            $catId = null;
+            if (is_numeric($selectedCategory)) {
+                $catId = (int) $selectedCategory;
+            } else {
+                $categoryModel = \App\Models\Category::where('slug', $selectedCategory)
+                    ->orWhere('name', $selectedCategory)
+                    ->first();
+                if ($categoryModel) {
+                    $catId = $categoryModel->id;
+                    $selectedCategory = (string) $catId;
+                }
+            }
+
+            if ($catId) {
+                $baseQuery->where('products.category_id', $catId);
+            }
         }
 
         // Accept the short desktop values and the descriptive mobile values.

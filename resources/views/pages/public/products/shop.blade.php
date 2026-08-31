@@ -721,12 +721,12 @@
 
             {{-- Mobile Category Chips --}}
             <div class="mobile-cat-chips-row">
-                <a href="{{ route('products.shop') }}?q={{ urlencode($search) }}&sort={{ $sort }}"
+                <a href="{{ route('products.shop') }}?sort={{ $sort }}"
                    class="mobile-cat-chip {{ empty($selectedCategory) ? 'active' : '' }}">
                     <i class="bi bi-grid-3x3-gap-fill"></i> All
                 </a>
                 @foreach($categories as $cat)
-                    <a href="{{ route('products.shop') }}?category={{ $cat->id }}&q={{ urlencode($search) }}&sort={{ $sort }}"
+                    <a href="{{ route('products.shop') }}?category={{ $cat->id }}&sort={{ $sort }}"
                        class="mobile-cat-chip {{ (string)$selectedCategory === (string)$cat->id ? 'active' : '' }}">
                         <i class="{{ $cat->icon_class }}"></i> {{ $cat->name }}
                     </a>
@@ -992,18 +992,18 @@
                     <h3 style="font-family: 'Space Grotesk', sans-serif; font-size: 1.15rem; font-weight: 700; color: var(--text-dark); margin-bottom: 1.25rem; border-bottom: 2px solid #f3f4f6; padding-bottom: 0.5rem; display: flex; align-items: center; justify-content: space-between;">
                         <span>Categories</span>
                         @if(!empty($selectedCategory))
-                            <a href="{{ route('products.shop') }}?q={{ urlencode($search) }}&sort={{ $sort }}" class="text-danger small fw-normal text-decoration-none" style="font-size: 0.78rem;">Clear</a>
+                            <a href="{{ route('products.shop') }}?sort={{ $sort }}" class="text-danger small fw-normal text-decoration-none" style="font-size: 0.78rem;">Clear</a>
                         @endif
                     </h3>
                     <ul class="list-unstyled mb-0" style="display: flex; flex-direction: column; gap: 0.25rem;">
                         <li>
-                            <a href="{{ route('products.shop') }}?q={{ urlencode($search) }}&sort={{ $sort }}" class="d-flex align-items-center justify-content-between p-2 rounded text-decoration-none {{ empty($selectedCategory) ? 'bg-light text-danger fw-bold' : 'text-secondary' }}" style="font-size: 0.88rem; transition: var(--transition-smooth); font-family: 'Outfit', sans-serif;">
+                            <a href="{{ route('products.shop') }}?sort={{ $sort }}" class="d-flex align-items-center justify-content-between p-2 rounded text-decoration-none {{ empty($selectedCategory) ? 'bg-light text-danger fw-bold' : 'text-secondary' }}" style="font-size: 0.88rem; transition: var(--transition-smooth); font-family: 'Outfit', sans-serif;">
                                 <span>All Categories</span>
                             </a>
                         </li>
                         @foreach($categories as $cat)
                             <li>
-                                <a href="{{ route('products.shop') }}?category={{ $cat->id }}&q={{ urlencode($search) }}&sort={{ $sort }}" class="d-flex align-items-center justify-content-between p-2 rounded text-decoration-none {{ (string)$selectedCategory === (string)$cat->id ? 'bg-light text-danger fw-bold' : 'text-secondary' }}" style="font-size: 0.88rem; transition: var(--transition-smooth); font-family: 'Outfit', sans-serif;">
+                                <a href="{{ route('products.shop') }}?category={{ $cat->id }}&sort={{ $sort }}" class="d-flex align-items-center justify-content-between p-2 rounded text-decoration-none {{ (string)$selectedCategory === (string)$cat->id ? 'bg-light text-danger fw-bold' : 'text-secondary' }}" style="font-size: 0.88rem; transition: var(--transition-smooth); font-family: 'Outfit', sans-serif;">
                                     <div class="d-flex align-items-center gap-2">
                                         <i class="{{ $cat->icon_class }}" style="font-size: 1rem;"></i>
                                         <span>{{ $cat->name }}</span>
