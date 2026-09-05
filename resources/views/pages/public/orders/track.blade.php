@@ -413,6 +413,13 @@
                             </tr>
                         </thead>
                         <tbody>
+                            @php
+                                $subtotal = 0;
+                                foreach($order->details as $d) {
+                                    $subtotal += ($d->selling_price * $d->quantity);
+                                }
+                                $discount = max(0, $subtotal - (float) $order->total_amount);
+                            @endphp
                             @foreach($order->details as $item)
                                 <tr>
                                     <td>
@@ -422,10 +429,16 @@
                                     <td class="text-end fw-semibold">Rs. {{ number_format($item->selling_price * $item->quantity, 2) }}</td>
                                 </tr>
                             @endforeach
-                            <tr>
-                                <td colspan="2" class="text-end text-muted">Shipping ({{ $order->shipping_type ?? 'Courier' }}):</td>
-                                <td class="text-end fw-semibold">Rs. {{ number_format($order->shipping_cost, 2) }}</td>
-                            </tr>
+                            @if($discount > 0)
+                                <tr>
+                                    <td colspan="2" class="text-end text-muted">Subtotal:</td>
+                                    <td class="text-end fw-semibold">Rs. {{ number_format($subtotal, 2) }}</td>
+                                </tr>
+                                <tr>
+                                    <td colspan="2" class="text-end text-success fw-semibold">Discount:</td>
+                                    <td class="text-end fw-bold text-success">- Rs. {{ number_format($discount, 2) }}</td>
+                                </tr>
+                            @endif
                             <tr class="table-light">
                                 <td colspan="2" class="text-end fw-bold">Total Amount:</td>
                                 <td class="text-end fw-bold text-danger fs-6">Rs. {{ number_format($order->total_amount, 2) }}</td>
