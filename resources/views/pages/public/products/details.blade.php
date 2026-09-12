@@ -211,6 +211,64 @@
             transition: var(--transition-smooth);
         }
         
+        .preview-nav-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.88);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.9);
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
+            color: #1f2937;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            cursor: pointer;
+            z-index: 20;
+            transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+            outline: none;
+            padding: 0;
+            user-select: none;
+        }
+
+        .preview-nav-btn:hover {
+            background: #ffffff;
+            color: var(--accent);
+            transform: translateY(-50%) scale(1.1);
+            box-shadow: 0 6px 20px rgba(220, 38, 38, 0.25);
+        }
+
+        .preview-nav-btn:active {
+            transform: translateY(-50%) scale(0.92);
+        }
+
+        .preview-nav-btn.prev-btn {
+            left: 12px;
+        }
+
+        .preview-nav-btn.next-btn {
+            right: 12px;
+        }
+
+        @media (max-width: 767.98px) {
+            .preview-nav-btn {
+                width: 36px;
+                height: 36px;
+                font-size: 1.05rem;
+            }
+            .preview-nav-btn.prev-btn {
+                left: 8px;
+            }
+            .preview-nav-btn.next-btn {
+                right: 8px;
+            }
+        }
+
         .details-discount-badge {
             position: absolute;
             top: 16px;
@@ -740,6 +798,16 @@
                             <div id="videoPreviewContainer" class="w-100 h-100 position-absolute top-0 start-0 d-none">
                                 <iframe id="ytPlayerFrame" class="w-100 h-100 border-0" src="" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
                             </div>
+
+                            <!-- Media Navigation Arrows -->
+                            @if((count($product['images']) + (!empty($ytVideoId) ? 1 : 0)) > 1)
+                                <button type="button" class="preview-nav-btn prev-btn" id="btnPreviewPrev" aria-label="Previous Media" title="Previous Image/Video">
+                                    <i class="bi bi-chevron-left"></i>
+                                </button>
+                                <button type="button" class="preview-nav-btn next-btn" id="btnPreviewNext" aria-label="Next Media" title="Next Image/Video">
+                                    <i class="bi bi-chevron-right"></i>
+                                </button>
+                            @endif
                         </div>
 
                         <!-- Thumbnails list -->
@@ -897,7 +965,11 @@
                                         <a href="{{ $waUrl }}" target="_blank" class="btn btn-success py-2 fw-bold flex-grow-1 d-flex align-items-center justify-content-center gap-2" style="background-color: #25d366; border: none; border-radius: 10px; transition: var(--transition-smooth); color: #fff; text-decoration: none; box-shadow: 0 4px 10px rgba(37, 211, 102, 0.2); font-size: 0.85rem;">
                                             <i class="bi bi-whatsapp"></i> WhatsApp Order
                                         </a>
-                                        <button type="button" id="btnShareProduct" class="btn btn-outline-dark py-2 px-3 fw-bold" style="border-radius: 10px; border: 2px solid #374151; color: #374151; background: #fff; transition: var(--transition-smooth); display: inline-flex; align-items: center; justify-content: center; font-size: 1rem;" data-title="{{ $product['product_name'] }}" data-url="{{ Request::url() }}" title="Share Product">
+                                        @php
+                                            $sharePrice = !is_null($product['discounted_price']) ? $product['discounted_price'] : ($product['price'] ?? 0);
+                                            $formattedSharePrice = "Rs. " . number_format((float)$sharePrice, 2);
+                                        @endphp
+                                        <button type="button" id="btnShareProduct" class="btn btn-outline-dark py-2 px-3 fw-bold" style="border-radius: 10px; border: 2px solid #374151; color: #374151; background: #fff; transition: var(--transition-smooth); display: inline-flex; align-items: center; justify-content: center; font-size: 1rem;" data-title="{{ $product['product_name'] }}" data-price="{{ $formattedSharePrice }}" data-url="{{ Request::url() }}" title="Share Product">
                                             <i class="bi bi-share-fill"></i>
                                         </button>
                                     </div>
@@ -1184,31 +1256,123 @@
                 }
             });
 
-            // Click Share Product Button
-            $(document).on('click', '#btnShareProduct', function() {
+            // Media navigation function (Prev / Next)
+            function navigateMedia(direction) {
+                const thumbItems = $('.thumb-strip .thumb-item');
+                if (!thumbItems.length) return;
+
+                let activeIndex = thumbItems.index($('.thumb-strip .thumb-item.active'));
+                if (activeIndex === -1) activeIndex = 0;
+
+                let targetIndex;
+                if (direction === 'next') {
+                    targetIndex = (activeIndex + 1) % thumbItems.length;
+                } else {
+                    targetIndex = (activeIndex - 1 + thumbItems.length) % thumbItems.length;
+                }
+
+                const targetThumb = thumbItems.eq(targetIndex);
+                targetThumb.trigger('click');
+
+                // Smoothly scroll active thumbnail into view
+                const strip = document.querySelector('.thumb-strip');
+                if (strip && targetThumb[0]) {
+                    const stripWidth = strip.clientWidth;
+                    const thumbLeft = targetThumb[0].offsetLeft;
+                    const thumbWidth = targetThumb[0].clientWidth;
+
+                    strip.scrollTo({
+                        left: thumbLeft - (stripWidth / 2) + (thumbWidth / 2),
+                        behavior: 'smooth'
+                    });
+                }
+            }
+
+            $(document).on('click', '#btnPreviewPrev', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                navigateMedia('prev');
+            });
+
+            $(document).on('click', '#btnPreviewNext', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                navigateMedia('next');
+            });
+
+            // Touch swipe gesture support for mobile preview box
+            const previewBox = document.querySelector('.main-preview-box');
+            if (previewBox) {
+                let touchStartX = 0;
+                let touchEndX = 0;
+
+                previewBox.addEventListener('touchstart', function(e) {
+                    touchStartX = e.changedTouches[0].screenX;
+                }, { passive: true });
+
+                previewBox.addEventListener('touchend', function(e) {
+                    touchEndX = e.changedTouches[0].screenX;
+                    const swipeThreshold = 45;
+                    if (touchEndX < touchStartX - swipeThreshold) {
+                        navigateMedia('next');
+                    } else if (touchEndX > touchStartX + swipeThreshold) {
+                        navigateMedia('prev');
+                    }
+                }, { passive: true });
+            }
+
+            // Click Share Product Button (Includes Product Name, Price, and Link)
+            $(document).on('click', '#btnShareProduct', async function() {
                 const title = $(this).attr('data-title') || $(this).data('title');
-                const url = $(this).attr('data-url') || $(this).data('url');
+                const price = $(this).attr('data-price') || $(this).data('price');
+                const url = $(this).attr('data-url') || $(this).data('url') || window.location.href;
+
+                const shareTitle = `${title} (${price}) - Loku Kade`;
+                const shareText = `Check out "${title}" on Loku Kade!\n💰 Price: ${price}\n🚚 Cash on Delivery Island-wide\n🔗 Order Now: ${url}`;
 
                 if (navigator.share) {
-                    navigator.share({
-                        title: title,
-                        text: 'Check out this product on Loku Kade: ' + title,
-                        url: url
-                    })
-                    .then(() => console.log('Product shared successfully'))
-                    .catch((error) => console.log('Error sharing product', error));
+                    try {
+                        await navigator.share({
+                            title: shareTitle,
+                            text: shareText,
+                            url: url
+                        });
+                    } catch (error) {
+                        if (error.name !== 'AbortError') {
+                            console.log('Error sharing product', error);
+                        }
+                    }
                 } else {
-                    // Fallback: Copy link to clipboard
-                    const tempInput = document.createElement('input');
-                    tempInput.value = url;
-                    document.body.appendChild(tempInput);
-                    tempInput.select();
-                    document.execCommand('copy');
-                    document.body.removeChild(tempInput);
-                    
-                    showShareToast('Link copied to clipboard!');
+                    // Fallback: Copy product name, price, and URL to clipboard
+                    const copyContent = `${title}\nPrice: ${price}\nLink: ${url}`;
+                    if (navigator.clipboard && window.isSecureContext) {
+                        navigator.clipboard.writeText(copyContent).then(() => {
+                            showShareToast('Product details & link copied to clipboard!');
+                        }).catch(() => {
+                            fallbackCopy(copyContent);
+                        });
+                    } else {
+                        fallbackCopy(copyContent);
+                    }
                 }
             });
+
+            function fallbackCopy(text) {
+                const tempInput = document.createElement('textarea');
+                tempInput.value = text;
+                tempInput.style.position = 'fixed';
+                tempInput.style.left = '-9999px';
+                document.body.appendChild(tempInput);
+                tempInput.focus();
+                tempInput.select();
+                try {
+                    document.execCommand('copy');
+                    showShareToast('Product details & link copied to clipboard!');
+                } catch (err) {
+                    showShareToast('Link copied to clipboard!');
+                }
+                document.body.removeChild(tempInput);
+            }
 
             @if(empty($product['images']) && !empty($ytVideoId))
                 setTimeout(function() {
