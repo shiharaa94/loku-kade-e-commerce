@@ -1327,8 +1327,8 @@
                 const price = $(this).attr('data-price') || $(this).data('price');
                 const url = $(this).attr('data-url') || $(this).data('url') || window.location.href;
 
-                const shareTitle = `${title} (${price}) - Loku Kade`;
-                const shareText = `Check out "${title}" on Loku Kade!\n💰 Price: ${price}\n🚚 Cash on Delivery Island-wide\n🔗 Order Now: ${url}`;
+                const shareTitle = `${title} (${price} - Free Delivery) | Loku Kade`;
+                const shareText = `Check out "${title}" on Loku Kade!\n💰 Price: ${price} (Free Delivery)\n🚚 Free Shipping & Cash on Delivery Island-wide\n🔗 Order Now: ${url}`;
 
                 if (navigator.share) {
                     try {
@@ -1344,7 +1344,7 @@
                     }
                 } else {
                     // Fallback: Copy product name, price, and URL to clipboard
-                    const copyContent = `${title}\nPrice: ${price}\nLink: ${url}`;
+                    const copyContent = `${title}\nPrice: ${price} (Free Delivery)\n🚚 Free Shipping & Cash on Delivery Island-wide\nOrder Link: ${url}`;
                     if (navigator.clipboard && window.isSecureContext) {
                         navigator.clipboard.writeText(copyContent).then(() => {
                             showShareToast('Product details & link copied to clipboard!');
