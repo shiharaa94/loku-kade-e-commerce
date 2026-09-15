@@ -119,23 +119,36 @@ class WhatsAppProductReviewSeeder extends Seeder
             $sold = (int)($sales[$product->id] ?? 0);
             $productOrders = collect($realOrdersByProduct->get($product->id, []))->shuffle();
 
-            if ($sold > 0) {
-                // Around 90% of sold quantity, minimum 4 reviews
-                $count = max(4, (int)round($sold * 0.90));
+            if ($sold === 0) {
+                $count = 0;
+                $fiveCount = 0;
+                $fourCount = 0;
+            } elseif ($sold === 1) {
+                $count = 1;
+                $fiveCount = 1;
+                $fourCount = 0;
+            } elseif ($sold === 2) {
+                $count = 2;
+                $fiveCount = rand(0, 1) === 1 ? 2 : 1;
+                $fourCount = $count - $fiveCount;
             } else {
-                // Pre-site WhatsApp customer reviews for items without DB sales
-                $count = rand(3, 7);
+                // Exactly ~90% of sold quantity, capped by $sold
+                $count = min($sold, max(1, (int) round($sold * 0.90)));
+
+                // Ratio of 5-star reviews to keep average strictly between 4.6 and 4.9
+                $ratio5 = rand(65, 88) / 100.0;
+                $fiveCount = (int) round($count * $ratio5);
+                $fourCount = $count - $fiveCount;
+
+                // Ensure at least one 4-star review so average is around 4.7 - 4.9
+                if ($count >= 2 && $fourCount < 1) {
+                    $fourCount = 1;
+                    $fiveCount = $count - 1;
+                }
             }
 
-            // Ratio of 5-star reviews to keep average strictly between 4.6 and 4.9
-            $ratio5 = rand(65, 88) / 100.0;
-            $fiveCount = (int)round($count * $ratio5);
-            $fourCount = $count - $fiveCount;
-
-            // Ensure at least one 4-star review so it feels authentic (e.g. 4.7 - 4.9)
-            if ($count >= 2 && $fourCount < 1) {
-                $fourCount = 1;
-                $fiveCount = $count - 1;
+            if ($count === 0) {
+                continue;
             }
 
             $ratings = array_merge(array_fill(0, $fiveCount, 5), array_fill(0, $fourCount, 4));
