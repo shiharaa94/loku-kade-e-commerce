@@ -15,7 +15,7 @@ class WhatsAppProductReviewSeeder extends Seeder
      */
     public function run(): void
     {
-        // 1. Truncate existing dummy reviews
+        // 1. Truncate existing reviews
         DB::statement('SET FOREIGN_KEY_CHECKS=0;');
         ProductReview::truncate();
         DB::statement('SET FOREIGN_KEY_CHECKS=1;');
@@ -25,30 +25,50 @@ class WhatsAppProductReviewSeeder extends Seeder
             return;
         }
 
+        // 2. Fetch real orders by product from order_details & order_headers
+        $realOrdersByProduct = DB::table('order_details')
+            ->join('order_headers', 'order_details.order_number', '=', 'order_headers.order_number')
+            ->select(
+                'order_details.product_id',
+                'order_details.order_number',
+                'order_headers.customer_name',
+                'order_headers.created_at as order_date'
+            )
+            ->whereNotNull('order_headers.customer_name')
+            ->where('order_headers.customer_name', '!=', '')
+            ->get()
+            ->groupBy('product_id');
+
+        // 3. Extract unique pool of actual customer names from all orders in order_headers
+        $realCustomerNamePool = DB::table('order_headers')
+            ->whereNotNull('customer_name')
+            ->where('customer_name', '!=', '')
+            ->pluck('customer_name')
+            ->map(function ($name) {
+                $clean = trim(preg_replace('/\s+/', ' ', $name));
+                return ucwords(strtolower($clean));
+            })
+            ->filter(function ($name) {
+                return strlen($name) >= 3;
+            })
+            ->unique()
+            ->values()
+            ->all();
+
+        // Fallback default Sri Lankan names if database pool is empty
+        if (empty($realCustomerNamePool)) {
+            $realCustomerNamePool = [
+                'Kasun Perera', 'Nuwan Pradeep', 'Dinusha Fernando', 'Chamara Silva',
+                'Sanduni Jayawardena', 'Tharindu Senanayake', 'Dilshan Bandara', 'Nadeesha Karunaratne',
+                'Lahiru Dissanayake', 'Chathurika Mendis', 'Ashen Rathnayake', 'Sachini Gamage',
+                'Ishara Wijesinghe', 'Roshan Alwis', 'Danushka Jayasuriya', 'Pramod Madushanka'
+            ];
+        }
+
         $sales = DB::table('order_details')
             ->select('product_id', DB::raw('SUM(quantity) as total_sold'))
             ->groupBy('product_id')
             ->pluck('total_sold', 'product_id');
-
-        $customerNames = [
-            'Kasun Perera', 'Nuwan Pradeep', 'Dinusha Fernando', 'Chamara Silva',
-            'Sanduni Jayawardena', 'Tharindu Senanayake', 'Dilshan Bandara', 'Nadeesha Karunaratne',
-            'Lahiru Dissanayake', 'Chathurika Mendis', 'Ashen Rathnayake', 'Sachini Gamage',
-            'Ishara Wijesinghe', 'Roshan Alwis', 'Danushka Jayasuriya', 'Pramod Madushanka',
-            'Kavinda Wickramasinghe', 'Hansi Abeysekara', 'Thilini Gunasekara', 'Mahesh Kumara',
-            'Supun Jayalath', 'Amila Sampath', 'Malsha Weerasinghe', 'Sahan Pathirana',
-            'Niroshan De Silva', 'Gayani Rajapaksha', 'Buddhika Senaratne', 'Hashan Maduranga',
-            'Rasika Priyadarshana', 'Anushka Madushani', 'Dimuthu Jayawardena', 'Kushan Vithanage',
-            'Dilantha Hettiarachchi', 'Udeshika Samanmali', 'Ramesh Fonseka', 'Harsha Liyanage',
-            'Charith Wickramaratne', 'Lakshan Fernando', 'Shehan Athukorala', 'Nalaka Bandara',
-            'Suraj Gunawardena', 'Isuru Warnakulasuriya', 'Madhuranga Peiris', 'Janaka Edirisinghe',
-            'Sajith Kumara', 'Praveen Jayasooriya', 'Shenal Perera', 'Gayantha Koralage',
-            'Manula Ranasinghe', 'Oshada Thennakoon', 'Vindya Senanayake', 'Sewwandi Rupasinghe',
-            'Chathuri Herath', 'Niluka Sandamali', 'Madushani Ekanayake', 'Poornima Dasanayake',
-            'Kaveesha Navodya', 'Bimsara Jayakodi', 'Piyumi Wijekoon', 'Shalika Samaranayake',
-            'Naveen Dananjaya', 'Chathuranga Prasad', 'Menaka Liyanarachchi', 'Thilina Madushan',
-            'Hansani Jayasinghe', 'Ruwanthi Kariyawasam', 'Dhanushka Priyankara', 'Kusal Mendis'
-        ];
 
         $fiveStarComments = [
             'Excellent product! Highly recommended. Quality is top notch.',
@@ -97,6 +117,8 @@ class WhatsAppProductReviewSeeder extends Seeder
 
         foreach ($allProducts as $product) {
             $sold = (int)($sales[$product->id] ?? 0);
+            $productOrders = collect($realOrdersByProduct->get($product->id, []))->shuffle();
+
             if ($sold > 0) {
                 // Around 90% of sold quantity, minimum 4 reviews
                 $count = max(4, (int)round($sold * 0.90));
@@ -119,15 +141,34 @@ class WhatsAppProductReviewSeeder extends Seeder
             $ratings = array_merge(array_fill(0, $fiveCount, 5), array_fill(0, $fourCount, 4));
             shuffle($ratings);
 
-            foreach ($ratings as $r) {
-                $name = $customerNames[array_rand($customerNames)];
+            for ($i = 0; $i < $count; $i++) {
+                $r = $ratings[$i];
                 $comment = $r === 5 ? $fiveStarComments[array_rand($fiveStarComments)] : $fourStarComments[array_rand($fourStarComments)];
-                $createdAt = Carbon::now()->subDays(rand(2, 120))->subHours(rand(1, 23))->subMinutes(rand(1, 59));
+
+                // Check if we have an actual order record for this product
+                if ($i < $productOrders->count()) {
+                    $order = $productOrders[$i];
+                    $rawName = trim(preg_replace('/\s+/', ' ', $order->customer_name));
+                    $customerName = ucwords(strtolower($rawName));
+                    $orderNumber = $order->order_number;
+                    
+                    // Set review date 1-5 days after real order creation
+                    $orderTime = !empty($order->order_date) ? Carbon::parse($order->order_date) : Carbon::now()->subDays(rand(10, 60));
+                    $createdAt = $orderTime->addDays(rand(1, 4))->addHours(rand(1, 12));
+                    if ($createdAt->isFuture()) {
+                        $createdAt = Carbon::now()->subHours(rand(1, 48));
+                    }
+                } else {
+                    // Use a real customer name from the full database orders pool
+                    $customerName = $realCustomerNamePool[array_rand($realCustomerNamePool)];
+                    $orderNumber = null;
+                    $createdAt = Carbon::now()->subDays(rand(2, 120))->subHours(rand(1, 23))->subMinutes(rand(1, 59));
+                }
 
                 $batch[] = [
                     'product_id' => $product->id,
-                    'order_number' => null,
-                    'customer_name' => $name,
+                    'order_number' => $orderNumber,
+                    'customer_name' => $customerName,
                     'rating' => $r,
                     'comment' => $comment,
                     'created_at' => $createdAt->toDateTimeString(),
@@ -146,4 +187,5 @@ class WhatsAppProductReviewSeeder extends Seeder
         }
     }
 }
+
 
