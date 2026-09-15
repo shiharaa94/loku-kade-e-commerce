@@ -841,7 +841,7 @@
   <!-- --- FEATURED PRODUCTS --- -->
   @php
     $featuredProducts = \App\Models\Product::where('is_catalog_visible', true)
-        ->orderByDesc('sales_volume')
+        ->orderByDesc('id')
         ->take(8)
         ->get();
   @endphp
