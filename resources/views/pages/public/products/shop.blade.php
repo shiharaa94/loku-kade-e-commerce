@@ -756,18 +756,21 @@
                                     $inStock = ($p['total_quantity'] ?? 0) > 0;
                                     $avg = (float) ($p['avg_rating'] ?? 0);
                                     $count = (int) ($p['reviews_count'] ?? 0);
+                                    $flashUrl = route('products.publicDetails', ['id' => $p['id'], 'slug' => \Illuminate\Support\Str::slug($p['product_name'])]);
                                 @endphp
-                                <div class="carousel-item-card product-card js-card" data-id="{{ $p['id'] }}" data-url="{{ route('products.publicDetails', ['id' => $p['id'], 'slug' => \Illuminate\Support\Str::slug($p['product_name'])]) }}">
-                                    <div class="product-media">
+                                <div class="carousel-item-card product-card js-card" data-id="{{ $p['id'] }}" data-url="{{ $flashUrl }}">
+                                    <a href="{{ $flashUrl }}" class="product-media text-decoration-none d-block">
                                         <span class="discount-tag" style="background: #ef4444;">-{{ $p['discount_percentage'] }}% Off</span>
                                         @if($img)
                                             <img src="{{ $img }}" alt="{{ $p['product_name'] }}" class="product-thumb" loading="lazy">
                                         @else
                                             <div class="text-secondary"><i class="bi bi-image fs-1"></i></div>
                                         @endif
-                                    </div>
+                                    </a>
                                     <div class="product-body" style="padding: 12px;">
-                                        <h3 class="product-title" style="font-size: 0.88rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 6px;">{{ $p['product_name'] }}</h3>
+                                        <h3 class="product-title" style="font-size: 0.88rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 6px;">
+                                            <a href="{{ $flashUrl }}" class="text-decoration-none text-dark d-block" style="color: inherit;">{{ $p['product_name'] }}</a>
+                                        </h3>
                                         <div class="product-price-section mb-2" style="display: flex; align-items: baseline; gap: 6px; flex-wrap: wrap;">
                                             <span class="sale-price" style="font-size: 0.95rem; color: #ef4444; font-weight: 700;">Rs. {{ number_format($p['discounted_price'], 0) }}</span>
                                             <span class="regular-price text-decoration-line-through text-muted" style="font-size: 0.78rem;">Rs. {{ number_format($p['price'], 0) }}</span>
@@ -867,9 +870,10 @@
                                     $inStock = ($p['total_quantity'] ?? 0) > 0;
                                     $avg = (float) ($p['avg_rating'] ?? 0);
                                     $count = (int) ($p['reviews_count'] ?? 0);
+                                    $trendUrl = route('products.publicDetails', ['id' => $p['id'], 'slug' => \Illuminate\Support\Str::slug($p['product_name'])]);
                                 @endphp
-                                <div class="carousel-item-card product-card js-card" data-id="{{ $p['id'] }}" data-url="{{ route('products.publicDetails', ['id' => $p['id'], 'slug' => \Illuminate\Support\Str::slug($p['product_name'])]) }}">
-                                    <div class="product-media">
+                                <div class="carousel-item-card product-card js-card" data-id="{{ $p['id'] }}" data-url="{{ $trendUrl }}">
+                                    <a href="{{ $trendUrl }}" class="product-media text-decoration-none d-block">
                                         @if($isDiscounted)
                                             <span class="discount-tag" style="background: #ef4444;">-{{ $p['discount_percentage'] }}% Off</span>
                                         @endif
@@ -878,9 +882,11 @@
                                         @else
                                             <div class="text-secondary"><i class="bi bi-image fs-1"></i></div>
                                         @endif
-                                    </div>
+                                    </a>
                                     <div class="product-body" style="padding: 12px;">
-                                        <h3 class="product-title" style="font-size: 0.88rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 6px;">{{ $p['product_name'] }}</h3>
+                                        <h3 class="product-title" style="font-size: 0.88rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 6px;">
+                                            <a href="{{ $trendUrl }}" class="text-decoration-none text-dark d-block" style="color: inherit;">{{ $p['product_name'] }}</a>
+                                        </h3>
                                         <div class="product-price-section mb-2" style="display: flex; align-items: baseline; gap: 6px; flex-wrap: wrap;">
                                             @if($isDiscounted)
                                                 <span class="sale-price" style="font-size: 0.95rem; color: #ef4444; font-weight: 700;">Rs. {{ number_format($p['discounted_price'], 0) }}</span>
@@ -1072,9 +1078,10 @@
                                 $inStock = ($product['total_quantity'] ?? 0) > 0;
                                 $avg = (float) ($product['avg_rating'] ?? 0);
                                 $count = (int) ($product['reviews_count'] ?? 0);
+                                $productUrl = route('products.publicDetails', ['id' => $product['id'], 'slug' => \Illuminate\Support\Str::slug($product['product_name'])]);
                             @endphp
-                            <article class="product-card js-card" data-id="{{ $product['id'] }}" data-url="{{ route('products.publicDetails', ['id' => $product['id'], 'slug' => \Illuminate\Support\Str::slug($product['product_name'])]) }}">
-                                <div class="product-media">
+                            <article class="product-card js-card" data-id="{{ $product['id'] }}" data-url="{{ $productUrl }}">
+                                <a href="{{ $productUrl }}" class="product-media text-decoration-none d-block">
                                     @if($isDiscounted)
                                         <span class="discount-tag">-{{ $product['discount_percentage'] }}% Off</span>
                                     @endif
@@ -1084,10 +1091,14 @@
                                     @else
                                         <div class="text-secondary"><i class="bi bi-image fs-1"></i></div>
                                     @endif
-                                </div>
+                                </a>
 
                                 <div class="product-body">
-                                    <h2 class="product-title">{{ $product['product_name'] }}</h2>
+                                    <h2 class="product-title">
+                                        <a href="{{ $productUrl }}" class="text-decoration-none text-dark d-block" style="color: inherit;">
+                                            {{ $product['product_name'] }}
+                                        </a>
+                                    </h2>
 
                                     <div class="product-price-section">
                                         @if(!is_null($product['price']))

@@ -839,6 +839,12 @@
   @endif
 
   <!-- --- FEATURED PRODUCTS --- -->
+  @php
+    $featuredProducts = \App\Models\Product::where('is_catalog_visible', true)
+        ->orderByDesc('sales_volume')
+        ->take(8)
+        ->get();
+  @endphp
   <section class="featured-showcase" id="popularItems">
     <div class="container">
       <div class="section-header reveal">
@@ -848,7 +854,51 @@
       </div>
 
       <div class="products-grid" id="productsGrid">
-        <!-- Products will load dynamically via JS -->
+        @foreach($featuredProducts as $fp)
+          @php
+            $fpUrl = route('products.publicDetails', ['id' => $fp->id, 'slug' => $fp->slug]);
+            $fpImg = $fp->main_image_url;
+            $fpStock = \App\Models\Stock::where('product_id', $fp->id)->where('quantity', '>', 0)->orderBy('id', 'desc')->first();
+            if (!$fpStock) {
+                $fpStock = \App\Models\Stock::where('product_id', $fp->id)->orderBy('id', 'desc')->first();
+            }
+            $origPrice = $fpStock ? (float)$fpStock->selling_price : 0;
+            $disAmt = ($fpStock && (int)$fpStock->dis_status === 1 && (float)$fpStock->discount > 0) ? min((float)$fpStock->discount, $origPrice) : 0;
+            $discPrice = max(0, $origPrice - $disAmt);
+            $disPct = ($origPrice > 0 && $disAmt > 0) ? (int)round(($disAmt / $origPrice) * 100) : 0;
+          @endphp
+          <article class="product-item reveal active" id="dynamic-product-{{ $fp->id }}" style="cursor: pointer;">
+            <a href="{{ $fpUrl }}" class="product-media-wrap d-block text-decoration-none">
+              @if($disPct > 0)
+                <span class="badge-discount">-{{ $disPct }}%</span>
+              @endif
+              @if($fpImg)
+                <img src="{{ $fpImg }}" alt="{{ $fp->product_name }}" loading="lazy">
+              @else
+                <div class="product-placeholder">
+                  <i class="bi bi-box-seam"></i>
+                  <span>Loku Kade</span>
+                </div>
+              @endif
+            </a>
+            <div class="product-content">
+              <h3>
+                <a href="{{ $fpUrl }}" class="product-name text-decoration-none text-dark d-block" style="color: inherit;">{{ $fp->product_name }}</a>
+              </h3>
+              <div class="product-price">
+                <span class="price-wholesale">Rs. {{ number_format($discPrice > 0 ? $discPrice : $origPrice, 2) }}</span>
+                @if($disAmt > 0)
+                  <span class="price-retail">Rs. {{ number_format($origPrice, 2) }}</span>
+                @endif
+              </div>
+              <div class="product-actions">
+                <a href="{{ $fpUrl }}" class="btn btn-primary" style="text-decoration: none;">
+                  <i class="bi bi-bag-check-fill"></i> View Details
+                </a>
+              </div>
+            </div>
+          </article>
+        @endforeach
       </div>
 
       <div class="showcase-action reveal">

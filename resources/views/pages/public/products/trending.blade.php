@@ -113,21 +113,28 @@
                         $avg = (float) ($product['avg_rating'] ?? 0);
                         $count = (int) ($product['reviews_count'] ?? 0);
                     @endphp
-                    <article class="product-card js-card" data-id="{{ $product['id'] }}" data-url="{{ route('products.publicDetails', ['id' => $product['id'], 'slug' => \Illuminate\Support\Str::slug($product['product_name'])]) }}">
-                        <div class="product-media">
-                            @if($isDiscounted)
-                                <span class="discount-tag" style="background: #ef4444;">-{{ $product['discount_percentage'] }}% Off</span>
-                            @endif
+                        @php
+                            $productUrl = route('products.publicDetails', ['id' => $product['id'], 'slug' => \Illuminate\Support\Str::slug($product['product_name'])]);
+                        @endphp
+                        <article class="product-card js-card" data-id="{{ $product['id'] }}" data-url="{{ $productUrl }}">
+                            <a href="{{ $productUrl }}" class="product-media text-decoration-none d-block">
+                                @if($isDiscounted)
+                                    <span class="discount-tag" style="background: #ef4444;">-{{ $product['discount_percentage'] }}% Off</span>
+                                @endif
 
-                            @if($image)
-                                <img src="{{ $image }}" alt="{{ $product['product_name'] }}" class="product-thumb" loading="lazy" decoding="async">
-                            @else
-                                <div class="text-secondary"><i class="bi bi-image fs-1"></i></div>
-                            @endif
-                        </div>
+                                @if($image)
+                                    <img src="{{ $image }}" alt="{{ $product['product_name'] }}" class="product-thumb" loading="lazy" decoding="async">
+                                @else
+                                    <div class="text-secondary"><i class="bi bi-image fs-1"></i></div>
+                                @endif
+                            </a>
 
-                        <div class="product-body">
-                            <h2 class="product-title">{{ $product['product_name'] }}</h2>
+                            <div class="product-body">
+                                <h2 class="product-title">
+                                    <a href="{{ $productUrl }}" class="text-decoration-none text-dark d-block" style="color: inherit;">
+                                        {{ $product['product_name'] }}
+                                    </a>
+                                </h2>
 
                             <div class="product-price-section">
                                 @if(!is_null($product['price']))

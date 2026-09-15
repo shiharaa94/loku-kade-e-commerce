@@ -223,6 +223,9 @@ document.addEventListener('DOMContentLoaded', () => {
         const whatsappText = encodeURIComponent(`Hi, I'm interested in buying the product: ${product.product_name} (ID: ${product.id})`);
         const whatsappUrl = `https://wa.me/94706050500?text=${whatsappText}`;
 
+        // Form Product URL
+        const productUrl = product.public_url || `/shop/product/${product.id}`;
+
         // Create product card
         const card = document.createElement('article');
         card.className = 'product-item reveal active';
@@ -230,7 +233,7 @@ document.addEventListener('DOMContentLoaded', () => {
         card.style.cursor = 'pointer';
         card.addEventListener('click', (e) => {
           if (!e.target.closest('a, button')) {
-            window.location.href = `/shop/product/${product.id}`;
+            window.location.href = productUrl;
           }
         });
 
@@ -320,25 +323,29 @@ document.addEventListener('DOMContentLoaded', () => {
                       product_id: ${product.id},
                       stock_id: ${product.best_stock_id || 'null'},
                       product_name: '${product.product_name.replace(/'/g, "\\'")}',
-                      selling_price: ${parseFloat(product.discounted_price || product.price)},
+                      selling_price: ${parseFloat(product.discounted_price || product.price || 0)},
                       quantity: 1,
-                      image: '${imgUrl || ""}',
-                      max_qty: ${product.total_quantity || 999}
+                      image: '${imgUrl || ''}',
+                      max_qty: ${parseInt(product.total_quantity || 999)}
                     })"
                     data-tooltip="Add to Cart">
-              <i class="bi bi-cart-plus" style="font-size: 1rem;"></i>
+              <i class="bi bi-cart-plus-fill"></i>
             </button>
           `;
         }
 
         card.innerHTML = `
-          <div class="product-media">
+          <a href="${productUrl}" class="product-media text-decoration-none d-block">
             ${discountBadge}
             ${imageHtml}
-          </div>
+          </a>
           <div class="product-details">
             <span class="product-category">Featured</span>
-            <h3 class="product-title">${product.product_name}</h3>
+            <h3 class="product-title">
+              <a href="${productUrl}" class="text-decoration-none text-dark d-block" style="color: inherit;">
+                ${product.product_name}
+              </a>
+            </h3>
             <div class="price-container">
               <span class="price-sale">${priceSale}</span>
               ${priceOriginal}
