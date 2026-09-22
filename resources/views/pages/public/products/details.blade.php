@@ -746,13 +746,51 @@
 
 @section('content')
     @php
-        $ytVideoId = null;
+        $videoInfo = null;
         if (!empty($product['youtube_video_url'])) {
             $rawUrl = trim($product['youtube_video_url']);
+            
+            // 1. YouTube Detection
             if (preg_match('%(?:youtube(?:-nocookie)?\.com/(?:.*[?&]v=|shorts/|embed/|v/)|youtu\.be/)([^"&?/ ]{11})%i', $rawUrl, $match)) {
-                $ytVideoId = $match[1];
-            } elseif (preg_match('/^[a-zA-Z0-9_-]{11}$/', $rawUrl)) {
-                $ytVideoId = $rawUrl;
+                $ytId = $match[1];
+                $videoInfo = [
+                    'type' => 'youtube',
+                    'id' => $ytId,
+                    'embed_url' => 'https://www.youtube.com/embed/' . $ytId . '?autoplay=1&mute=0',
+                    'thumbnail' => 'https://img.youtube.com/vi/' . $ytId . '/0.jpg',
+                ];
+            } elseif (preg_match('/^[a-zA-Z0-9_-]{11}$/', $rawUrl) && !is_numeric($rawUrl)) {
+                $videoInfo = [
+                    'type' => 'youtube',
+                    'id' => $rawUrl,
+                    'embed_url' => 'https://www.youtube.com/embed/' . $rawUrl . '?autoplay=1&mute=0',
+                    'thumbnail' => 'https://img.youtube.com/vi/' . $rawUrl . '/0.jpg',
+                ];
+            }
+            // 2. TikTok Detection (Full video link, embed, short link, or numeric ID)
+            elseif (preg_match('%tiktok\.com/(?:@[^/]+/video/|embed/v2/|embed/|v/|v2/)(\d+)%i', $rawUrl, $match)) {
+                $tiktokId = $match[1];
+                $videoInfo = [
+                    'type' => 'tiktok',
+                    'id' => $tiktokId,
+                    'embed_url' => 'https://www.tiktok.com/embed/v2/' . $tiktokId,
+                    'thumbnail' => null,
+                ];
+            } elseif (preg_match('%(?:vm\.tiktok\.com|vt\.tiktok\.com|tiktok\.com/t)/([a-zA-Z0-9_-]+)%i', $rawUrl, $match)) {
+                $tiktokCode = $match[1];
+                $videoInfo = [
+                    'type' => 'tiktok',
+                    'id' => $tiktokCode,
+                    'embed_url' => 'https://www.tiktok.com/embed/v2/' . $tiktokCode,
+                    'thumbnail' => null,
+                ];
+            } elseif (preg_match('/^\d{15,22}$/', $rawUrl)) {
+                $videoInfo = [
+                    'type' => 'tiktok',
+                    'id' => $rawUrl,
+                    'embed_url' => 'https://www.tiktok.com/embed/v2/' . $rawUrl,
+                    'thumbnail' => null,
+                ];
             }
         }
     @endphp
@@ -794,13 +832,13 @@
                                 </div>
                             @endif
 
-                            <!-- YouTube Video Preview Container -->
-                            <div id="videoPreviewContainer" class="w-100 h-100 position-absolute top-0 start-0 d-none">
-                                <iframe id="ytPlayerFrame" class="w-100 h-100 border-0" src="" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                            <!-- Video Preview Container (YouTube / TikTok) -->
+                            <div id="videoPreviewContainer" class="w-100 h-100 position-absolute top-0 start-0 d-none" style="background: #000; overflow: hidden;">
+                                <iframe id="videoPlayerFrame" class="w-100 h-100 border-0" src="" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
                             </div>
 
                             <!-- Media Navigation Arrows -->
-                            @if((count($product['images']) + (!empty($ytVideoId) ? 1 : 0)) > 1)
+                            @if((count($product['images']) + (!empty($videoInfo) ? 1 : 0)) > 1)
                                 <button type="button" class="preview-nav-btn prev-btn" id="btnPreviewPrev" aria-label="Previous Media" title="Previous Image/Video">
                                     <i class="bi bi-chevron-left"></i>
                                 </button>
@@ -811,7 +849,7 @@
                         </div>
 
                         <!-- Thumbnails list -->
-                        @if(count($product['images']) > 1 || !empty($ytVideoId))
+                        @if(count($product['images']) > 1 || !empty($videoInfo))
                             <div class="thumb-strip">
                                 @foreach($product['images'] as $index => $img)
                                     <div class="thumb-item js-gallery-thumb {{ $index === 0 ? 'active' : '' }}" data-src="{{ $img }}">
@@ -819,10 +857,17 @@
                                     </div>
                                 @endforeach
 
-                                @if(!empty($ytVideoId))
-                                    <div class="thumb-item position-relative video-thumb js-video-thumb" data-video-id="{{ $ytVideoId }}">
-                                        <img src="https://img.youtube.com/vi/{{ $ytVideoId }}/0.jpg" alt="Product Video Thumbnail">
-                                        <div class="play-overlay"><i class="bi bi-play-btn-fill"></i></div>
+                                @if(!empty($videoInfo))
+                                    <div class="thumb-item position-relative video-thumb js-video-thumb" data-embed-url="{{ $videoInfo['embed_url'] }}" data-video-type="{{ $videoInfo['type'] }}" title="Watch {{ ucfirst($videoInfo['type']) }} Video">
+                                        @if($videoInfo['type'] === 'youtube')
+                                            <img src="{{ $videoInfo['thumbnail'] }}" alt="YouTube Video Thumbnail">
+                                            <div class="play-overlay"><i class="bi bi-youtube"></i></div>
+                                        @elseif($videoInfo['type'] === 'tiktok')
+                                            <div class="d-flex align-items-center justify-content-center w-100 h-100" style="background: linear-gradient(135deg, #010101 0%, #161823 60%, #fe2c55 100%); color: #ffffff;">
+                                                <i class="bi bi-tiktok fs-3"></i>
+                                            </div>
+                                            <div class="play-overlay"><i class="bi bi-play-fill fs-2"></i></div>
+                                        @endif
                                     </div>
                                 @endif
                             </div>
@@ -1160,9 +1205,12 @@
         function updatePreviewImage(src, element) {
             // Hide video container and clear src
             const videoCont = document.getElementById('videoPreviewContainer');
+            const playerFrame = document.getElementById('videoPlayerFrame') || document.getElementById('ytPlayerFrame');
             if (videoCont) {
                 videoCont.classList.add('d-none');
-                document.getElementById('ytPlayerFrame').src = '';
+                if (playerFrame) {
+                    playerFrame.src = '';
+                }
             }
 
             // Show main image / placeholder
@@ -1181,10 +1229,12 @@
             items.forEach(function(item) {
                 item.classList.remove('active');
             });
-            element.classList.add('active');
+            if (element) {
+                element.classList.add('active');
+            }
         }
 
-        function updatePreviewToVideo(videoId, element) {
+        function updatePreviewToVideo(embedUrl, element) {
             // Hide main image / placeholder
             const previewImg = document.getElementById('mainProductPreview');
             if (previewImg) {
@@ -1197,9 +1247,10 @@
 
             // Show video container and load iframe src
             const videoCont = document.getElementById('videoPreviewContainer');
-            if (videoCont) {
+            const playerFrame = document.getElementById('videoPlayerFrame') || document.getElementById('ytPlayerFrame');
+            if (videoCont && playerFrame) {
                 videoCont.classList.remove('d-none');
-                document.getElementById('ytPlayerFrame').src = 'https://www.youtube.com/embed/' + videoId + '?autoplay=1&mute=0';
+                playerFrame.src = embedUrl;
             }
 
             // Manage thumbnail visual state
@@ -1207,7 +1258,9 @@
             items.forEach(function(item) {
                 item.classList.remove('active');
             });
-            element.classList.add('active');
+            if (element) {
+                element.classList.add('active');
+            }
         }
 
         document.addEventListener('DOMContentLoaded', function() {
@@ -1217,10 +1270,10 @@
                 updatePreviewImage(src, this);
             });
 
-            // Click video thumbnail
+            // Click video thumbnail (YouTube / TikTok)
             $(document).on('click', '.js-video-thumb', function() {
-                const videoId = $(this).attr('data-video-id') || $(this).data('video-id');
-                updatePreviewToVideo(videoId, this);
+                const embedUrl = $(this).attr('data-embed-url') || $(this).data('embed-url');
+                updatePreviewToVideo(embedUrl, this);
             });
 
             // Click WhatsApp button in related products
@@ -1328,7 +1381,7 @@
                 const url = $(this).attr('data-url') || $(this).data('url') || window.location.href;
 
                 const shareTitle = `${title} (${price}) | Loku Kade`;
-                const shareText = `Check out "${title}" on Loku Kade!\n💰 Price: ${price}\n🚚 Free Shipping & Cash on Delivery Island-wide`;
+                const shareText = `Check out "${title}" on Loku Kade!\n\n*💰 Price: ${price}*\n*🚚 Free Shipping & Cash on Delivery Island-wide*\n`;
 
                 if (navigator.share) {
                     try {
@@ -1344,7 +1397,7 @@
                     }
                 } else {
                     // Fallback: Copy product name, price, and URL to clipboard
-                    const copyContent = `Check out "${title}" on Loku Kade!\n💰 Price: ${price}\n🚚 Free Shipping & Cash on Delivery Island-wide\n🔗 Order Now: ${url}`;
+                    const copyContent = `Check out "${title}" on Loku Kade!\n\n*💰 Price: ${price}*\n*🚚 Free Shipping & Cash on Delivery Island-wide*\n\n${url}`;
                     if (navigator.clipboard && window.isSecureContext) {
                         navigator.clipboard.writeText(copyContent).then(() => {
                             showShareToast('Product details & link copied to clipboard!');
@@ -1374,7 +1427,7 @@
                 document.body.removeChild(tempInput);
             }
 
-            @if(empty($product['images']) && !empty($ytVideoId))
+            @if(empty($product['images']) && !empty($videoInfo))
                 setTimeout(function() {
                     const videoThumb = document.querySelector('.js-video-thumb');
                     if (videoThumb) {
