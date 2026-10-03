@@ -848,17 +848,19 @@
                             @endif
                         </div>
 
-                        <!-- Thumbnails list -->
+                        <!-- Thumbnails list (Order: 1. Main Image, 2. Video if present, 3. Sub-images) -->
                         @if(count($product['images']) > 1 || !empty($videoInfo))
                             <div class="thumb-strip">
-                                @foreach($product['images'] as $index => $img)
-                                    <div class="thumb-item js-gallery-thumb {{ $index === 0 ? 'active' : '' }}" data-src="{{ $img }}">
-                                        <img src="{{ $img }}" alt="Product thumbnail {{ $index+1 }}">
+                                {{-- 1. Main Image Thumbnail --}}
+                                @if(!empty($product['images'][0]))
+                                    <div class="thumb-item js-gallery-thumb active" data-src="{{ $product['images'][0] }}">
+                                        <img src="{{ $product['images'][0] }}" alt="Main product thumbnail">
                                     </div>
-                                @endforeach
+                                @endif
 
+                                {{-- 2. Video Thumbnail (if present) --}}
                                 @if(!empty($videoInfo))
-                                    <div class="thumb-item position-relative video-thumb js-video-thumb" data-embed-url="{{ $videoInfo['embed_url'] }}" data-video-type="{{ $videoInfo['type'] }}" title="Watch {{ ucfirst($videoInfo['type']) }} Video">
+                                    <div class="thumb-item position-relative video-thumb js-video-thumb {{ empty($product['images']) ? 'active' : '' }}" data-embed-url="{{ $videoInfo['embed_url'] }}" data-video-type="{{ $videoInfo['type'] }}" title="Watch {{ ucfirst($videoInfo['type']) }} Video">
                                         @if($videoInfo['type'] === 'youtube')
                                             <img src="{{ $videoInfo['thumbnail'] }}" alt="YouTube Video Thumbnail">
                                             <div class="play-overlay"><i class="bi bi-youtube"></i></div>
@@ -869,6 +871,15 @@
                                             <div class="play-overlay"><i class="bi bi-play-fill fs-2"></i></div>
                                         @endif
                                     </div>
+                                @endif
+
+                                {{-- 3. Sub Images Thumbnails --}}
+                                @if(count($product['images']) > 1)
+                                    @foreach(array_slice($product['images'], 1) as $subIndex => $subImg)
+                                        <div class="thumb-item js-gallery-thumb" data-src="{{ $subImg }}">
+                                            <img src="{{ $subImg }}" alt="Product sub-image {{ $subIndex+1 }}">
+                                        </div>
+                                    @endforeach
                                 @endif
                             </div>
                         @endif
