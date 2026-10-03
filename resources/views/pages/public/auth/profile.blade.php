@@ -1156,7 +1156,11 @@
                                     <!-- Card Summary & Actions Footer -->
                                     <div class="order-card-footer">
                                         <span class="payment-chip">
-                                            <i class="bi bi-cash-stack text-success"></i> {{ $order->payment_type ?? 'Cash on Delivery' }}
+                                            @if(($order->payment_type ?? '') === 'Online Transfer')
+                                                <i class="bi bi-bank text-primary"></i> {{ $order->payment_type }}
+                                            @else
+                                                <i class="bi bi-cash-stack text-success"></i> {{ $order->payment_type ?? 'Cash on Delivery' }}
+                                            @endif
                                         </span>
                                         <div class="order-total-block">
                                             <span class="order-total-label">Total:</span>

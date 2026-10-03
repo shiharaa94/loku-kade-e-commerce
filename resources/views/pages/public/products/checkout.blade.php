@@ -156,7 +156,7 @@
         
         <!-- Header -->
         <div class="checkout-header">
-            <h1>Confirm Your COD Order</h1>
+            <h1>Confirm Your Order</h1>
             <p>Please enter your delivery details to complete your order. Shipping is 100% Free island-wide.</p>
         </div>
 
@@ -228,17 +228,17 @@
                                 </div>
                             </label>
 
-                            <!-- Bank Transfer Option -->
+                            <!-- Online Transfer Option -->
                             <label id="lbl-bank" class="payment-method-card" style="flex:1; min-width:140px; cursor:pointer; border:2px solid #e5e7eb; border-radius:12px; padding:14px 18px; display:flex; align-items:center; gap:12px; background:#ffffff; transition:all 0.2s;">
                                 <input type="radio" name="payment_type" value="Online Transfer" id="pay_bank" style="accent-color:#dc2626; width:18px; height:18px;">
                                 <div>
-                                    <div style="font-weight:700; font-size:0.95rem; color:#111827;">Bank Transfer</div>
-                                    <div style="font-size:0.78rem; color:#6b7280;">Online payment via bank</div>
+                                    <div style="font-weight:700; font-size:0.95rem; color:#111827;">Online Transfer</div>
+                                    <div style="font-size:0.78rem; color:#6b7280;">Bank deposit / Online transfer</div>
                                 </div>
                             </label>
                         </div>
 
-                        <!-- Bank Transfer Details Panel (hidden by default) -->
+                        <!-- Online Transfer Details Panel (hidden by default) -->
                         <div id="bankTransferPanel" style="display:none;">
                             <!-- Bank Account Info Card -->
                             @if($bankAccounts->count() > 0)
@@ -272,12 +272,12 @@
                                 <div class="col-12">
                                     <label class="form-label">Transaction / Reference Number *</label>
                                     <input type="text" name="receipt_number" form="checkoutSubmitForm" id="receipt_number" class="form-control" placeholder="e.g. TXN123456789">
-                                    <small class="text-muted">Enter the transaction reference number from your bank</small>
+                                    <small class="text-muted">Enter the transaction reference number from your bank / transfer receipt</small>
                                 </div>
                                 <div class="col-12">
                                     <label class="form-label">Attach Receipt Image *</label>
                                     <input type="file" name="receipt_image" form="checkoutSubmitForm" id="receipt_image" class="form-control" accept="image/*">
-                                    <small class="text-muted">Upload a screenshot or photo of your bank transfer receipt (JPG, PNG, max 4MB)</small>
+                                    <small class="text-muted">Upload a screenshot or photo of your online transfer / deposit receipt (JPG, PNG, max 4MB)</small>
                                 </div>
                                 <!-- Receipt image preview -->
                                 <div class="col-12" id="receiptPreviewWrap" style="display:none;">
@@ -486,14 +486,14 @@
 
             // --- Payment Method Radio Toggle ---
             $('input[name="payment_type"]').on('change', function() {
-                const isBankTransfer = $(this).val() === 'Online Transfer';
+                const isOnlineTransfer = $(this).val() === 'Online Transfer';
 
                 // Toggle panel visibility
-                if (isBankTransfer) {
+                if (isOnlineTransfer) {
                     $('#bankTransferPanel').slideDown(250);
                     $('#lbl-bank').css({ border: '2px solid #dc2626', background: '#fff7ed' });
                     $('#lbl-cod').css({ border: '2px solid #e5e7eb', background: '#ffffff' });
-                    $('#btnSubmitText').text('Confirm Bank Transfer Order');
+                    $('#btnSubmitText').text('Confirm Online Transfer Order');
                 } else {
                     $('#bankTransferPanel').slideUp(250);
                     $('#lbl-cod').css({ border: '2px solid #dc2626', background: '#fff7ed' });
@@ -524,7 +524,7 @@
                 const submitBtn = $('#btnSubmitCheckout');
                 const paymentType = $('input[name="payment_type"]:checked').val();
 
-                // Validate bank transfer fields manually
+                // Validate online transfer fields manually
                 if (paymentType === 'Online Transfer') {
                     const receiptNum = $('#receipt_number').val().trim();
                     const receiptFile = $('#receipt_image')[0].files[0];
@@ -534,7 +534,7 @@
                         return;
                     }
                     if (!receiptFile) {
-                        Swal.fire({ title: 'Missing Receipt Image', text: 'Please attach your bank transfer receipt image.', icon: 'warning', confirmButtonColor: '#e12a1a', background: '#fffcf9' });
+                        Swal.fire({ title: 'Missing Receipt Image', text: 'Please attach your online transfer receipt image.', icon: 'warning', confirmButtonColor: '#e12a1a', background: '#fffcf9' });
                         return;
                     }
                 }
@@ -617,7 +617,7 @@
                             background: '#fffcf9',
                             color: '#111827'
                         });
-                        submitBtn.prop('disabled', false).html(`<i class="bi bi-bag-check-fill me-2"></i> <span id="btnSubmitText">${paymentType === 'Online Transfer' ? 'Confirm Bank Transfer Order' : 'Confirm Cash on Delivery Order'}</span>`);
+                        submitBtn.prop('disabled', false).html(`<i class="bi bi-bag-check-fill me-2"></i> <span id="btnSubmitText">${paymentType === 'Online Transfer' ? 'Confirm Online Transfer Order' : 'Confirm Cash on Delivery Order'}</span>`);
                     }
                 } catch (err) {
                     console.error(err);
@@ -630,7 +630,7 @@
                         background: '#fffcf9',
                         color: '#111827'
                     });
-                    submitBtn.prop('disabled', false).html(`<i class="bi bi-bag-check-fill me-2"></i> <span id="btnSubmitText">${paymentType === 'Online Transfer' ? 'Confirm Bank Transfer Order' : 'Confirm Cash on Delivery Order'}</span>`);
+                    submitBtn.prop('disabled', false).html(`<i class="bi bi-bag-check-fill me-2"></i> <span id="btnSubmitText">${paymentType === 'Online Transfer' ? 'Confirm Online Transfer Order' : 'Confirm Cash on Delivery Order'}</span>`);
                 }
             });
         });
