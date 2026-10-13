@@ -18,8 +18,12 @@ use Illuminate\Support\Facades\Route;
 
 // --- Public Pages ---
 Route::get('/', function () {
-    return view('index');
+    return redirect()->route('products.shop');
 })->name('home');
+
+Route::get('/landing', function () {
+    return view('index');
+})->name('public.landing');
 
 Route::get('/privacy', function () {
     return view('privacy');

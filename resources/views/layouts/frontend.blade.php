@@ -655,18 +655,19 @@
     <div class="container">
       <!-- Row 1: Logo, Navigation links, Call-to-actions -->
       <div class="header-top-row" style="display: flex; width: 100%; justify-content: space-between; align-items: center; gap: 1rem;">
-          <a href="{{ route('home') }}" class="logo" id="logoLink" aria-label="Loku Kade Home">
+          <a href="{{ route('products.shop') }}" class="logo" id="logoLink" aria-label="Loku Kade Home">
             <img src="{{ asset('assets/images/logo.webp') }}" alt="Loku Kade Logo" width="48" height="48" style="height: 48px; width: 48px; border-radius: 50%; object-fit: cover; aspect-ratio: 1/1;">
             Loku <span>Kade</span>
           </a>
 
           <nav id="navDrawer">
-            <a href="{{ route('home') }}#hero">Home</a>
-            <a href="{{ route('home') }}#trackOrder">Track Order</a>
-            <a href="{{ route('home') }}#howToOrder">How to Order</a>
-            <a href="{{ route('home') }}#popularItems">Popular Items</a>
-            <a href="{{ route('home') }}#delivery">Delivery Info</a>
-            <a href="{{ route('home') }}#faqs">FAQs</a>
+            <a href="{{ route('products.shop') }}">Shop</a>
+            <a href="{{ route('products.flashDeals') }}">Flash Deals</a>
+            <a href="{{ route('products.trending') }}">Trending</a>
+            <a href="{{ route('public.landing') }}#trackOrder">Track Order</a>
+            <a href="{{ route('public.landing') }}#howToOrder">How to Order</a>
+            <a href="{{ route('public.landing') }}#delivery">Delivery Info</a>
+            <a href="{{ route('public.landing') }}#faqs">FAQs</a>
           </nav>
 
           <div class="header-ctas">
@@ -729,7 +730,7 @@
   <footer>
     <div class="container footer-grid">
       <div class="footer-col brand">
-        <a href="{{ route('home') }}" class="logo" style="margin-bottom: 1.2rem;" aria-label="Loku Kade Home">
+        <a href="{{ route('products.shop') }}" class="logo" style="margin-bottom: 1.2rem;" aria-label="Loku Kade Home">
           <img src="{{ asset('assets/images/logo.webp') }}" alt="Loku Kade Logo" width="48" height="48" style="height: 48px; width: 48px; border-radius: 50%; object-fit: cover; aspect-ratio: 1/1;">
           Loku <span>Kade</span>
         </a>
@@ -746,12 +747,13 @@
       <div class="footer-col footer-col-links">
         <h3>Quick Links</h3>
         <ul class="footer-links">
-          <li><a href="{{ route('home') }}#hero">Home</a></li>
-          <li><a href="{{ route('home') }}#trackOrder">Track Order</a></li>
-          <li><a href="{{ route('home') }}#howToOrder">How to Order</a></li>
-          <li><a href="{{ route('home') }}#popularItems">Popular Products</a></li>
-          <li><a href="{{ route('home') }}#delivery">Shipping Information</a></li>
-          <li><a href="{{ route('home') }}#faqs">FAQs</a></li>
+          <li><a href="{{ route('products.shop') }}">Shop</a></li>
+          <li><a href="{{ route('products.flashDeals') }}">Flash Deals</a></li>
+          <li><a href="{{ route('products.trending') }}">Trending</a></li>
+          <li><a href="{{ route('public.landing') }}#trackOrder">Track Order</a></li>
+          <li><a href="{{ route('public.landing') }}#howToOrder">How to Order</a></li>
+          <li><a href="{{ route('public.landing') }}#delivery">Shipping Information</a></li>
+          <li><a href="{{ route('public.landing') }}#faqs">FAQs</a></li>
         </ul>
       </div>
 
@@ -1151,7 +1153,7 @@
 
   <!-- Mobile Bottom Navigation Bar -->
   <div class="mobile-bottom-nav">
-      <a href="{{ route('home') }}" class="bottom-nav-item {{ request()->routeIs('home') ? 'active' : '' }}">
+      <a href="{{ route('products.shop') }}" class="bottom-nav-item {{ request()->routeIs('home') ? 'active' : '' }}">
           <i class="bi bi-house-door"></i>
           <span>Home</span>
       </a>
