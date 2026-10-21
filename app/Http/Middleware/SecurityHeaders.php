@@ -37,13 +37,13 @@ class SecurityHeaders
 
         // 7. Content Security Policy (CSP)
         $csp = "default-src 'self' https: http: data: blob:; " .
-               "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net https://code.jquery.com https://*.tiktok.com; " .
+               "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net https://code.jquery.com https://*.tiktok.com https://connect.facebook.net https://www.facebook.com; " .
                "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net; " .
                "font-src 'self' https://fonts.gstatic.com https://cdn.jsdelivr.net data:; " .
-               "img-src 'self' data: blob: https: http: https://*.youtube.com https://*.ytimg.com https://*.tiktokcdn.com https://*.tiktokcdn-us.com https://*.tiktok.com; " .
+               "img-src 'self' data: blob: https: http: https://*.youtube.com https://*.ytimg.com https://*.tiktokcdn.com https://*.tiktokcdn-us.com https://*.tiktok.com https://www.facebook.com https://connect.facebook.net; " .
                "media-src 'self' https: http: data: blob: https://*.youtube.com https://*.tiktokcdn.com https://*.tiktok.com; " .
-               "frame-src 'self' https://www.youtube.com https://www.youtube-nocookie.com https://youtube.com https://www.tiktok.com https://tiktok.com; " .
-               "connect-src 'self' https: http: https://*.tiktok.com; " .
+               "frame-src 'self' https://www.youtube.com https://www.youtube-nocookie.com https://youtube.com https://www.tiktok.com https://tiktok.com https://www.facebook.com https://web.facebook.com; " .
+               "connect-src 'self' https: http: https://*.tiktok.com https://www.facebook.com https://connect.facebook.net; " .
                "frame-ancestors 'self'; " .
                "base-uri 'self'; " .
                "form-action 'self' https: http:;";
