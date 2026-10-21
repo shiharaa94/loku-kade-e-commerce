@@ -465,6 +465,18 @@
 
                 const grandTotal = Math.max(0, subtotal - discount);
                 $('#checkoutGrandTotal').text('Rs. ' + grandTotal.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2}));
+
+                // Meta Pixel InitiateCheckout Event (fires once per checkout session)
+                if (typeof fbq === 'function' && !window.__metaPixelCheckoutInitiated && totalQty > 0) {
+                    window.__metaPixelCheckoutInitiated = true;
+                    fbq('track', 'InitiateCheckout', {
+                        content_type: 'product',
+                        content_ids: cart.map(item => String(item.product_id)),
+                        num_items: totalQty,
+                        value: grandTotal,
+                        currency: 'LKR'
+                    });
+                }
             }
 
             // Define global remove handler
@@ -563,12 +575,25 @@
 
                 // Append cart items
                 const cartItems = getLocalCart();
+                let orderSubtotal = 0;
+                let totalOrderQty = 0;
+
                 cartItems.forEach(function(item, index) {
                     formData.append(`items[${index}][product_id]`, item.product_id);
                     formData.append(`items[${index}][quantity]`, item.quantity);
                     formData.append(`items[${index}][selling_price]`, item.selling_price);
                     if (item.stock_id) formData.append(`items[${index}][stock_id]`, item.stock_id);
+
+                    const qty = parseInt(item.quantity) || 1;
+                    orderSubtotal += (parseFloat(item.selling_price) || 0) * qty;
+                    totalOrderQty += qty;
                 });
+
+                let orderDiscount = 0;
+                if (totalOrderQty > 1) {
+                    orderDiscount = courierCharge * (totalOrderQty - 1);
+                }
+                const finalOrderTotal = Math.max(0, orderSubtotal - orderDiscount);
 
                 try {
                     const response = await $.ajax({
@@ -580,6 +605,18 @@
                     });
 
                     if (response.status === 200) {
+                        // Meta Pixel Purchase Event
+                        if (typeof fbq === 'function') {
+                            fbq('track', 'Purchase', {
+                                content_type: 'product',
+                                content_ids: cartItems.map(item => String(item.product_id)),
+                                num_items: totalOrderQty,
+                                value: finalOrderTotal,
+                                currency: 'LKR',
+                                order_id: response.order_number
+                            });
+                        }
+
                         localStorage.removeItem('lokukade_cart');
 
                         // Update nav header badge

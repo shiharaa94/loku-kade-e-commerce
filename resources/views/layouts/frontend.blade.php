@@ -963,6 +963,17 @@
             }
             saveCart(cart);
             renderCart();
+
+            // Meta Pixel AddToCart Event
+            if (typeof fbq === 'function') {
+                fbq('track', 'AddToCart', {
+                    content_name: product.product_name,
+                    content_ids: [String(product.product_id)],
+                    content_type: 'product',
+                    value: (parseFloat(product.selling_price) || 0) * addQty,
+                    currency: 'LKR'
+                });
+            }
             
             // Open the drawer to show the product was added
             if (openDrawer) {
@@ -1166,6 +1177,13 @@
 
         // Initialize Cart Badge count on page load
         updateCartBadge();
+
+        // Meta Pixel Contact Event for WhatsApp interactions
+        $(document).on('click', 'a[href*="wa.me"], a[href*="whatsapp.com"]', function() {
+            if (typeof fbq === 'function') {
+                fbq('track', 'Contact');
+            }
+        });
     });
   </script>
 

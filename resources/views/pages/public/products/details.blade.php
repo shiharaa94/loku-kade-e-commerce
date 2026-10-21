@@ -1197,8 +1197,20 @@
     @php
         $courierShipping = $shippings->firstWhere('type', 'Courier');
         $courierCharge = $courierShipping ? $courierShipping->amount : 350.00;
+        $contentPrice = (float) ($product['discounted_price'] ?? $product['price'] ?? 0);
     @endphp
     <script>
+        // Meta Pixel ViewContent Event
+        if (typeof fbq === 'function') {
+            fbq('track', 'ViewContent', {
+                content_name: '{{ addslashes($product['product_name']) }}',
+                content_ids: ['{{ $product['id'] }}'],
+                content_type: 'product',
+                value: {{ $contentPrice }},
+                currency: 'LKR'
+            });
+        }
+
         function showShareToast(message) {
             let toast = document.createElement('div');
             toast.className = 'share-toast';
