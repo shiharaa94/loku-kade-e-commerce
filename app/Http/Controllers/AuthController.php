@@ -35,10 +35,23 @@
  
          $remember = $request->has('remember');
  
-         if (Auth::attempt($credentials, $remember)) {
-             $request->session()->regenerate();
-             return redirect()->intended(route('profile'))->with('success', 'Welcome back!');
-         }
+         // Authenticate customer (role_id = 6)
+        if (Auth::attempt(['email' => $credentials['email'], 'password' => $credentials['password'], 'role_id' => 6], $remember)) {
+            $request->session()->regenerate();
+            return redirect()->intended(route('profile'))->with('success', 'Welcome back!');
+        }
+
+        // Backward compatibility for accounts registered with role_id = 2 during testing: auto-upgrade to role_id = 6
+        if (Auth::attempt(['email' => $credentials['email'], 'password' => $credentials['password'], 'role_id' => 2], $remember)) {
+            $user = Auth::user();
+            $user->role_id = 6;
+            $user->save();
+
+            $request->session()->regenerate();
+            return redirect()->intended(route('profile'))->with('success', 'Welcome back!');
+        }
+
+
  
          return back()->withErrors([
              'email' => 'The provided credentials do not match our records.',
@@ -69,7 +82,7 @@
              'email' => $data['email'],
              'username' => $data['email'],
              'password' => Hash::make($data['password']),
-             'role_id' => 2, // Customer
+             'role_id' => 6, // Customer
              'status' => 1, // Active
          ]);
  
@@ -95,7 +108,9 @@
      public function sendOtp(Request $request)
      {
          $request->validate(['email' => 'required|email']);
-         $user = User::where('email', $request->email)->first();
+         $user = User::where('email', $request->email)
+            ->whereIn('role_id', [2, 6])
+            ->first();
  
          if (!$user) {
              return back()->withErrors(['email' => 'No user registered with this email address.']);
@@ -166,7 +181,9 @@
              return redirect()->route('password.request');
          }
  
-         $user = User::where('email', $email)->first();
+         $user = User::where('email', $email)
+            ->whereIn('role_id', [2, 6])
+            ->first();
          if (!$user) {
              return redirect()->route('password.request');
          }
@@ -174,6 +191,9 @@
          $user->password = Hash::make($request->password);
          $user->otp = null;
          $user->otp_expires_at = null;
+        if ($user->role_id == 2) {
+            $user->role_id = 6;
+        }
          $user->save();
  
          // Clean session
@@ -269,6 +289,16 @@
          $user = User::where('email', $email)->orWhere('google_id', $googleId)->first();
  
          if ($user) {
+            // Auto-upgrade accounts created with role_id = 2 during testing to role_id = 6
+            if ($user->role_id == 2) {
+                $user->role_id = 6;
+                $user->save();
+            }
+
+            // Ensure account has customer role (role_id = 6)
+            if ($user->role_id != 6) {
+                return redirect()->route('login')->withErrors(['email' => 'This account does not have customer access.']);
+            }
              // Link Google ID if missing
              if (empty($user->google_id)) {
                  $user->update(['google_id' => $googleId]);
@@ -283,7 +313,7 @@
                  'username' => $email,
                  'google_id' => $googleId,
                  'password' => Hash::make(Str::random(16)),
-                 'role_id' => 2, // Customer
+                 'role_id' => 6, // Customer
                  'status' => 1, // Active
              ]);
              Auth::login($user, true);
